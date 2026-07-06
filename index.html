@@ -3,215 +3,447 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Clinical RAG Evaluation Console — Applied AI Science demo · Ainoa Figueroa Vidal</title>
+<title>Clinical RAG Evaluation Console — Applied AI Science · Ainoa Figueroa Vidal</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --ink:#0f172a; --muted:#64748b; --line:#e2e8f0; --bg:#f1f5f9; --card:#fff;
-  --brand:#0d9488; --brand2:#0f766e; --brand-soft:#ccfbf1;
+  --ink:#0f172a; --mute:#64748b; --rule:#e2e8f0; --bg:#eef2f7; --card:#fff;
+  --accent:#0d9488; --accent2:#14b8a6; --soft:#ccfbf1; --soft2:#f0fdfa;
   --blue:#2563eb; --blue-soft:#eff6ff;
   --ok:#059669; --ok-bg:#ecfdf5;
-  --warn:#d97706; --warn-bg:#fffbeb;
+  --warn:#b45309; --warn-bg:#fffbeb;
   --bad:#dc2626; --bad-bg:#fef2f2;
-  --purple:#7c3aed;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:"IBM Plex Sans",system-ui,sans-serif;background:var(--bg);color:#334155;font-size:14px;line-height:1.45;min-height:100vh}
-.wrap{max-width:1280px;margin:0 auto;padding:20px 16px 48px}
-.appbar{background:var(--card);border:1px solid var(--line);border-top:4px solid var(--brand);border-radius:8px;padding:16px 20px;display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:flex-start;box-shadow:0 1px 3px rgba(15,23,42,.06)}
-.appbar h1{font-size:18px;font-weight:700;color:var(--ink);letter-spacing:-.02em}
-.appbar .sub{font-size:12px;color:var(--muted);margin-top:4px;max-width:520px}
-.badge{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:var(--brand-soft);color:var(--brand2);border:1px solid #99f6e4;padding:3px 8px;border-radius:4px;margin-left:8px;vertical-align:middle}
-.meta{display:flex;gap:10px;flex-wrap:wrap}
-.stat{background:#f8fafc;border:1px solid var(--line);border-radius:6px;padding:8px 14px;text-align:center;min-width:72px}
-.stat .v{font-size:18px;font-weight:700;color:var(--ink);font-family:"IBM Plex Mono",monospace}
-.stat .l{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-top:2px}
-.stat.ok .v{color:var(--ok)} .stat.warn .v{color:var(--warn)} .stat.bad .v{color:var(--bad)}
-.toolbar{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0;align-items:center}
-.btn{font-family:inherit;font-size:13px;font-weight:600;padding:9px 16px;border-radius:6px;border:1px solid var(--line);background:var(--card);cursor:pointer;color:var(--ink)}
-.btn:hover{border-color:var(--brand);color:var(--brand2)}
-.btn-primary{background:var(--brand);color:#fff;border-color:var(--brand)}
-.btn-primary:hover{background:var(--brand2)}
-.btn:disabled{opacity:.45;cursor:not-allowed}
-.tour-hint{font-size:12px;color:var(--muted);flex:1;min-width:200px}
-.grid{display:grid;grid-template-columns:280px 1fr 300px;gap:14px;align-items:start}
-@media(max-width:1100px){.grid{grid-template-columns:1fr}}
-.panel{background:var(--card);border:1px solid var(--line);border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(15,23,42,.04)}
-.panel-hd{padding:12px 16px;background:#f8fafc;border-bottom:1px solid var(--line);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+body.running .spot.on{animation:glowteal 1.6s ease-in-out infinite}
+.wrap{max-width:1200px;margin:0 auto;padding:20px 16px 56px}
+
+/* ---- intro carousel ---- */
+.intro-ov{position:fixed;inset:0;background:rgba(15,23,42,.62);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:80;padding:20px;overflow-y:auto}
+.intro-ov.hide{display:none}
+.intro{background:#fff;border-radius:12px;max-width:620px;width:100%;padding:32px 34px 28px;box-shadow:0 24px 60px rgba(15,23,42,.3);position:relative;border:1px solid var(--rule);max-height:calc(100vh - 40px);overflow-y:auto}
+.intro .skip{position:absolute;top:16px;right:18px;border:none;background:transparent;color:var(--mute);font-size:22px;cursor:pointer;line-height:1}
+.intro .ik{font-size:10px;font-weight:700;letter-spacing:1.3px;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+.intro h3{font-size:22px;font-weight:700;color:var(--ink);letter-spacing:-.3px;margin-bottom:12px}
+.intro .obj{font-size:14.5px;color:#475569;margin-bottom:18px;line-height:1.55}
+.intro .obj b{color:var(--ink)}
+.intro .hero-visual{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+.intro .hv{border:1px solid var(--rule);border-radius:8px;padding:14px 12px;text-align:center;background:#f8fafc}
+.intro .hv .ic{font-size:28px;margin-bottom:6px}
+.intro .hv .t{font-size:12px;font-weight:700;color:var(--ink)}
+.intro .hv .d{font-size:11px;color:var(--mute);margin-top:4px}
+.intro .principle{background:var(--soft2);border:1px solid #99f6e4;border-left:4px solid var(--accent);border-radius:8px;padding:14px 16px;margin-bottom:18px;font-size:14px;color:#134e4a}
+.intro .principle em{font-style:normal;font-weight:700;color:var(--accent)}
+.intro ol{list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
+.intro ol li{counter-increment:s;padding-left:40px;position:relative;font-size:13.5px;color:#334155}
+.intro ol li::before{content:counter(s);position:absolute;left:0;top:-1px;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center}
+.intro ol li b{color:var(--ink)}
+.intronav{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:6px}
+.dots{display:flex;gap:7px}
+.dots i{width:8px;height:8px;border-radius:50%;background:var(--rule);display:block;transition:.2s}
+.dots i.on{background:var(--accent);transform:scale(1.15)}
+.startbtn{border:none;background:var(--ink);color:#fff;font-family:inherit;font-weight:600;font-size:14px;padding:12px 18px;border-radius:8px;cursor:pointer;flex:1}
+.startbtn:hover{background:#1e293b}
+.backbtn{border:1px solid var(--rule);background:#fff;color:var(--mute);font-family:inherit;font-weight:600;font-size:13px;padding:11px 16px;border-radius:8px;cursor:pointer}
+.backbtn:hover{border-color:var(--accent);color:var(--accent)}
+.introfeat{display:flex;flex-direction:column;gap:10px;margin-bottom:18px}
+.ifeat{border:1px solid var(--rule);border-left:3px solid var(--accent);border-radius:7px;padding:12px 14px}
+.ifeat .r{font-weight:700;font-size:13.5px;color:var(--ink);margin-bottom:3px}
+.ifeat .d{font-size:12.5px;color:#475569}
+
+/* ---- header ---- */
+.appbar{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;background:var(--card);border:1px solid var(--rule);border-top:4px solid var(--accent);border-radius:8px;padding:16px 20px;flex-wrap:wrap;box-shadow:0 2px 8px rgba(15,23,42,.05)}
+.brand{display:flex;align-items:center;gap:14px}
+.logo{width:42px;height:42px;border-radius:8px;background:var(--soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.appname{font-size:18px;font-weight:700;color:var(--ink);letter-spacing:-.02em}
+.proto{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--accent);background:var(--soft);border:1px solid #99f6e4;border-radius:4px;padding:2px 7px;margin-left:8px;vertical-align:middle}
+.appdesc{font-size:12px;color:var(--mute);margin-top:4px;max-width:540px}
+.appmeta{display:flex;gap:10px;flex-wrap:wrap}
+.m{background:#f8fafc;border:1px solid var(--rule);border-radius:6px;padding:8px 14px;text-align:center;min-width:76px}
+.m i{display:block;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--accent);margin-bottom:2px;font-style:normal}
+.m .v{font-size:17px;font-weight:700;color:var(--ink);font-family:"IBM Plex Mono",monospace}
+.subbar{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin:10px 2px 0;font-size:11.5px;color:var(--mute)}
+
+/* ---- toolbar ---- */
+.toolbar{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;background:var(--card);border:1px solid var(--rule);border-radius:8px;padding:12px 16px;margin:14px 0}
+.tour{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.starthere{font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--accent);background:var(--soft);border:1px solid #99f6e4;border-radius:999px;padding:4px 11px}
+.play{border:none;background:var(--accent);color:#fff;font-family:inherit;font-weight:700;font-size:14px;padding:11px 18px;border-radius:7px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.play:hover{background:#0f766e}
+.play:disabled{opacity:.5;cursor:not-allowed}
+.tourhint{font-size:12px;color:var(--mute);max-width:340px}
+.tourhint b{color:var(--ink)}
+.howto{border:1px solid var(--rule);background:#fff;color:var(--mute);font-family:inherit;font-weight:700;font-size:12px;padding:8px 14px;border-radius:8px;cursor:pointer}
+.howto:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ---- narration ---- */
+.narr{display:none;align-items:flex-start;gap:12px;background:var(--soft2);border:1px solid #99f6e4;border-left:4px solid var(--accent);border-radius:8px;padding:14px 18px;margin-bottom:14px}
+.narr.show{display:flex}
+.narr .act{flex-shrink:0;font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;background:var(--accent);color:#fff;border-radius:5px;padding:5px 11px}
+.narr .ntext{font-size:14.5px;font-weight:500;color:#134e4a}
+.narr .ntext b{color:var(--ink);font-weight:700}
+
+/* ---- section headers ---- */
+.sectionhd{display:flex;align-items:center;gap:14px;margin:28px 0 14px}
+.snum{font-family:"IBM Plex Mono";font-weight:600;font-size:14px;color:#fff;background:var(--accent);width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sectionhd h3{font-size:19px;font-weight:700;color:var(--ink);letter-spacing:-.2px}
+.sectionhd .sdesc{font-size:12.5px;color:var(--mute);font-weight:400;margin-top:3px}
+
+/* ---- live pipeline diagram ---- */
+.flowcard{background:var(--card);border:1px solid var(--rule);border-radius:8px;padding:18px 20px;margin-bottom:14px;transition:.3s}
+.flowcard.spot.on{border-color:var(--accent);box-shadow:0 0 0 3px rgba(13,148,136,.18),0 8px 24px rgba(13,148,136,.12)}
+.flowrow{display:flex;align-items:stretch;gap:0;overflow-x:auto;padding:4px 0}
+.fnode{flex:1;min-width:100px;text-align:center;padding:12px 8px;border:2px solid var(--rule);border-radius:8px;background:#f8fafc;margin:0 4px;opacity:.45;transform:scale(.97);transition:.35s;position:relative}
+.fnode .fn{font-size:22px;margin-bottom:4px}
+.fnode .fl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--mute)}
+.fnode .fs{font-size:11px;color:var(--mute);margin-top:4px;height:14px}
+.fnode.active{opacity:1;transform:scale(1);border-color:var(--accent);background:var(--soft2);box-shadow:0 4px 16px rgba(13,148,136,.2)}
+.fnode.done{opacity:1;border-color:#6ee7b7;background:var(--ok-bg)}
+.fnode.blocked{opacity:1;border-color:#fca5a5;background:var(--bad-bg)}
+.farrow{align-self:center;color:var(--rule);font-size:18px;flex-shrink:0;padding:0 2px}
+.farrow.lit{color:var(--accent)}
+.flowcap{font-size:11.5px;color:var(--mute);margin-top:12px}
+.flowcap b{color:var(--ink)}
+
+/* ---- main grid ---- */
+.grid{display:grid;grid-template-columns:280px minmax(0,1fr) 290px;gap:14px;align-items:start}
+@media(max-width:1080px){.grid{grid-template-columns:1fr 1fr}}
+@media(max-width:720px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--card);border:1px solid var(--rule);border-radius:8px;overflow:hidden;transition:.3s;opacity:.92}
+.panel.spot.on{opacity:1;border-color:var(--accent);box-shadow:0 0 0 3px rgba(13,148,136,.15),0 6px 20px rgba(13,148,136,.1);transform:translateY(-2px)}
+.panel-hd{padding:12px 16px;background:#f8fafc;border-bottom:1px solid var(--rule);display:flex;align-items:center;gap:10px}
+.panel-hd .pn{font-family:"IBM Plex Mono";font-size:11px;font-weight:600;color:#fff;background:var(--accent);width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.panel-hd .pt{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink)}
 .panel-bd{padding:14px 16px}
-.doc-list{list-style:none;max-height:320px;overflow-y:auto}
-.doc-list li{padding:10px 12px;border-radius:6px;cursor:pointer;margin-bottom:4px;border:1px solid transparent;font-size:12px}
+
+.doc-list{list-style:none}
+.doc-list li{padding:10px 12px;border-radius:7px;margin-bottom:5px;border:1px solid transparent;font-size:12px;cursor:pointer;transition:.15s}
 .doc-list li:hover{background:#f8fafc}
 .doc-list li.on{background:var(--blue-soft);border-color:#bfdbfe}
 .doc-list .dt{font-weight:600;color:var(--ink);font-size:13px}
-.doc-list .dm{font-size:11px;color:var(--muted);margin-top:2px}
-.q-grid{display:grid;gap:8px;margin-bottom:14px}
-.q-chip{text-align:left;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:#fff;cursor:pointer;font-size:12px;line-height:1.4}
-.q-chip:hover{border-color:var(--brand);background:var(--brand-soft)}
-.q-chip b{display:block;font-size:13px;color:var(--ink);margin-bottom:2px}
-.pipeline{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:14px}
-.pipe-step{font-size:10px;font-weight:600;padding:5px 10px;border-radius:4px;background:#f1f5f9;color:var(--muted);border:1px solid var(--line)}
-.pipe-step.active{background:var(--brand);color:#fff;border-color:var(--brand);animation:pulse .8s ease infinite alternate}
-.pipe-step.done{background:var(--ok-bg);color:var(--ok);border-color:#6ee7b7}
-@keyframes pulse{from{opacity:.85}to{opacity:1}}
-.retrieval{margin-bottom:14px}
-.ret-item{padding:10px 12px;background:#fffef8;border:1px solid var(--line);border-radius:6px;margin-bottom:6px;font-size:12px;line-height:1.5}
-.ret-item .score{font-family:"IBM Plex Mono";font-size:10px;color:var(--brand2);font-weight:600;margin-bottom:4px}
+.doc-list .dm{font-size:11px;color:var(--mute);margin-top:2px}
+
+.q-grid{display:grid;gap:8px}
+.q-chip{text-align:left;padding:12px 14px;border:2px solid var(--rule);border-radius:8px;background:#fff;cursor:pointer;font-size:12px;line-height:1.45;transition:.15s;width:100%;font-family:inherit}
+.q-chip:hover{border-color:var(--accent);background:var(--soft2)}
+.q-chip.sel{border-color:var(--accent);background:var(--soft);box-shadow:0 2px 10px rgba(13,148,136,.15)}
+.q-chip b{display:block;font-size:13px;color:var(--ink);margin-bottom:3px}
+.q-chip .trap{font-size:10px;font-weight:700;color:var(--bad);background:var(--bad-bg);border-radius:4px;padding:1px 6px;margin-left:4px}
+
+/* pipeline steps inside main */
+.steps{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.step{border:1px solid var(--rule);border-left:3px solid var(--rule);border-radius:7px;padding:12px 14px;opacity:.3;transform:translateY(6px);transition:.4s}
+.step.show{opacity:1;transform:none}
+.step.show.glow{animation:glowonce 1.2s ease-out}
+.step .stitle{font-weight:700;font-size:13px;color:var(--ink);display:flex;align-items:center;gap:8px}
+.step .num{width:22px;height:22px;border-radius:50%;background:var(--ink);color:#fff;font-size:11px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.step .body{font-size:12.5px;margin-top:6px;color:#475569}
+.step.s-retrieve{border-left-color:#38bdf8}.step.s-generate{border-left-color:#818cf8}
+.step.s-ground{border-left-color:var(--accent)}.step.s-policy{border-left-color:var(--warn)}
+.step.s-human{border-left-color:var(--ok)}
+
+.ret-item{padding:11px 13px;background:#fffef8;border:1px solid var(--rule);border-radius:7px;margin-bottom:7px;font-size:12.5px;line-height:1.5;opacity:0;transform:translateY(8px);transition:.4s}
+.ret-item.show{opacity:1;transform:none}
+.ret-item .score{font-family:"IBM Plex Mono";font-size:10px;color:var(--accent);font-weight:600;margin-bottom:5px}
 .ret-item mark{background:#fef08a;padding:0 2px}
-.answer-box{background:#f8fafc;border:1px solid var(--line);border-radius:8px;padding:14px;margin-bottom:12px;font-size:13px;line-height:1.6}
-.answer-box h4{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:8px}
-.claims{margin-top:10px}
-.claim{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:6px;margin-bottom:6px;font-size:12px;border:1px solid var(--line)}
+
+.answer-box{background:#f8fafc;border:1px solid var(--rule);border-radius:8px;padding:14px;margin-bottom:12px}
+.answer-box h4{font-size:11px;font-weight:700;color:var(--mute);text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.untrusted{font-size:9px;font-weight:700;color:var(--warn);background:var(--warn-bg);border:1px solid #fde68a;border-radius:4px;padding:2px 7px;text-transform:uppercase}
+.claims{margin-top:10px;display:flex;flex-direction:column;gap:6px}
+.claim{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:7px;font-size:12.5px;border:1px solid var(--rule);opacity:0;transform:translateX(-8px);transition:.35s}
+.claim.show{opacity:1;transform:none}
 .claim.supported{background:var(--ok-bg);border-color:#6ee7b7}
-.claim.unsupported{background:var(--bad-bg);border-color:#fca5a5}
+.claim.unsupported{background:var(--bad-bg);border-color:#fca5a5;animation:shake .4s ease}
 .claim.review{background:var(--warn-bg);border-color:#fcd34d}
-.claim-tag{font-size:9px;font-weight:700;text-transform:uppercase;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:1px}
+.claim-tag{font-size:9px;font-weight:700;text-transform:uppercase;padding:3px 7px;border-radius:4px;flex-shrink:0}
 .claim.supported .claim-tag{background:var(--ok);color:#fff}
 .claim.unsupported .claim-tag{background:var(--bad);color:#fff}
 .claim.review .claim-tag{background:var(--warn);color:#fff}
-.gate-box{padding:14px;background:var(--warn-bg);border:1px solid #fcd34d;border-radius:8px;margin-bottom:12px;display:none}
-.gate-box.show{display:block}
-.gate-box h4{color:#92400e;font-size:13px;margin-bottom:6px}
+
+.gate-box{padding:16px;background:var(--warn-bg);border:2px solid #fcd34d;border-radius:8px;margin-bottom:12px;display:none}
+.gate-box.show{display:block;animation:glowamber 1.5s ease-in-out 2}
+.gate-box.blocked{background:var(--bad-bg);border-color:#fca5a5}
+.gate-box h4{font-size:14px;color:#92400e;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.gate-box.blocked h4{color:#991b1b}
+.gate-box p{font-size:13px;color:#475569}
+
+.json-out{font-family:"IBM Plex Mono",monospace;font-size:10.5px;background:#0f172a;color:#94a3b8;padding:14px;border-radius:7px;max-height:150px;overflow:auto;white-space:pre-wrap;margin-top:10px;display:none}
+.json-out.show{display:block;animation:glowonce 1s ease-out}
+
 .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-.json-out{font-family:"IBM Plex Mono",monospace;font-size:10px;background:#0f172a;color:#94a3b8;padding:12px;border-radius:6px;max-height:140px;overflow:auto;white-space:pre-wrap;margin-top:10px;display:none}
-.json-out.show{display:block}
-.perm-ladder{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
-.perm-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;font-size:12px;border:1px solid var(--line)}
+.btn{font-family:inherit;font-size:13px;font-weight:600;padding:9px 16px;border-radius:7px;border:1px solid var(--rule);background:var(--card);cursor:pointer;color:var(--ink)}
+.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-primary:hover{background:#0f766e}
+
+.perm-ladder{display:flex;flex-direction:column;gap:8px}
+.perm-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:7px;font-size:12px;border:1px solid var(--rule);transition:.25s}
+.perm-row.lit{transform:scale(1.02);box-shadow:0 4px 12px rgba(0,0,0,.08)}
 .perm-row.auto{background:var(--ok-bg);border-color:#6ee7b7}
 .perm-row.ask{background:var(--warn-bg);border-color:#fcd34d}
 .perm-row.never{background:var(--bad-bg);border-color:#fca5a5}
-.perm-tag{font-size:9px;font-weight:700;padding:2px 7px;border-radius:3px;flex-shrink:0}
+.perm-tag{font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;flex-shrink:0}
 .perm-row.auto .perm-tag{background:var(--ok);color:#fff}
 .perm-row.ask .perm-tag{background:var(--warn);color:#fff}
 .perm-row.never .perm-tag{background:var(--bad);color:#fff}
-.eval-table{width:100%;border-collapse:collapse;font-size:11px;margin-top:8px}
-.eval-table th{text-align:left;font-size:9px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);padding:6px 8px;border-bottom:1px solid var(--line)}
-.eval-table td{padding:6px 8px;border-bottom:1px solid #f1f5f9}
+
+.bar-wrap{margin:8px 0 14px}
+.bar-label{display:flex;justify-content:space-between;font-size:11px;font-weight:600;margin-bottom:5px}
+.bar{height:10px;background:#e2e8f0;border-radius:999px;overflow:hidden}
+.bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:999px;width:0;transition:width .8s ease}
+
+.eval-table{width:100%;border-collapse:collapse;font-size:11px}
+.eval-table th{text-align:left;font-size:9px;text-transform:uppercase;color:var(--mute);padding:6px 8px;border-bottom:1px solid var(--rule)}
+.eval-table td{padding:7px 8px;border-bottom:1px solid #f1f5f9}
 .eval-table .pass{color:var(--ok);font-weight:700}
 .eval-table .fail{color:var(--bad);font-weight:700}
-.eval-table .pending{color:var(--muted)}
-.bar-wrap{margin:10px 0}
-.bar-label{display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px}
-.bar{height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden}
-.bar-fill{height:100%;background:var(--brand);border-radius:4px;transition:width .5s ease}
-.audit{font-family:"IBM Plex Mono",monospace;font-size:10px;background:#0f172a;color:#64748b;padding:10px;border-radius:6px;max-height:200px;overflow-y:auto;line-height:1.6}
+.eval-table .pending{color:var(--mute)}
+.eval-table tr.flash{background:var(--ok-bg);transition:.3s}
+
+.audit{font-family:"IBM Plex Mono",monospace;font-size:10px;background:#0f172a;color:#64748b;padding:12px;border-radius:7px;max-height:180px;overflow-y:auto;line-height:1.65}
 .audit .ev{color:#cbd5e1}.audit .ok{color:#6ee7b7}.audit .bad{color:#fca5a5}.audit .warn{color:#fcd34d}
-.disclaimer{font-size:11px;color:var(--muted);margin-top:14px;padding:10px 14px;background:#fff;border:1px dashed var(--line);border-radius:6px}
-footer{text-align:center;margin-top:20px;font-size:11px;color:var(--muted)}
-footer a{color:var(--brand2)}
-.modal-ov{position:fixed;inset:0;background:rgba(15,23,42,.5);display:none;align-items:center;justify-content:center;padding:20px;z-index:100}
+
+.principle-band{background:linear-gradient(135deg,#0f766e,#0d9488);color:#fff;border-radius:8px;padding:16px 20px;margin:14px 0;text-align:center}
+.principle-band q{font-size:16px;font-weight:600;font-style:italic;display:block;margin-bottom:4px}
+.principle-band span{font-size:11px;opacity:.85}
+
+.disclaimer{font-size:11px;color:var(--mute);margin-top:16px;padding:12px 16px;background:var(--card);border:1px dashed var(--rule);border-radius:8px}
+footer{text-align:center;margin-top:22px;font-size:11.5px;color:var(--mute)}
+footer a{color:var(--accent)}
+
+.modal-ov{position:fixed;inset:0;background:rgba(15,23,42,.5);display:none;align-items:center;justify-content:center;padding:20px;z-index:70}
 .modal-ov.open{display:flex}
 .modal{background:var(--card);border-radius:10px;max-width:480px;width:100%;padding:24px;box-shadow:0 20px 50px rgba(0,0,0,.15)}
 .modal h3{font-size:16px;color:var(--ink);margin-bottom:8px}
-.modal p{font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.5}
-.modal-ft{display:flex;gap:8px;justify-content:flex-end}
+.modal-ft{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+
+@keyframes glowteal{0%,100%{box-shadow:0 0 0 0 rgba(13,148,136,.2)}50%{box-shadow:0 0 0 5px rgba(13,148,136,.28),0 6px 20px rgba(13,148,136,.25)}}
+@keyframes glowonce{0%{box-shadow:0 0 0 0 rgba(13,148,136,0)}40%{box-shadow:0 0 0 4px rgba(13,148,136,.25)}100%{box-shadow:0 0 0 0 rgba(13,148,136,0)}}
+@keyframes glowamber{0%,100%{box-shadow:0 0 0 0 rgba(180,83,9,.15)}50%{box-shadow:0 0 0 4px rgba(180,83,9,.25)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+body.dim .panel:not(.spot.on),body.dim .flowcard:not(.spot.on){opacity:.55;filter:grayscale(.15)}
 </style>
 </head>
 <body>
+
+<!-- OVERVIEW CAROUSEL -->
+<div class="intro-ov" id="introOv">
+  <div class="intro">
+    <button class="skip" id="introSkip" title="Close">&times;</button>
+
+    <div class="introscreen" id="introS1">
+      <div class="ik">Overview · 1 / 4</div>
+      <h3>Clinical RAG Evaluation Console</h3>
+      <p class="obj">An interactive work sample for <b>Applied AI Science</b> in life sciences. A clinician asks a question about a trial protocol — the system retrieves source documents, generates an answer, and <b>validates every claim</b> before anything is approved. All data is fictional.</p>
+      <div class="hero-visual">
+        <div class="hv"><div class="ic">📄</div><div class="t">Grounded RAG</div><div class="d">Answers tied to source passages</div></div>
+        <div class="hv"><div class="ic">🔬</div><div class="t">Claim validation</div><div class="d">Catch hallucinations before release</div></div>
+        <div class="hv"><div class="ic">🛡️</div><div class="t">Human gate</div><div class="d">Never/Ask/Auto policy in code</div></div>
+      </div>
+      <div class="intronav">
+        <span class="dots"><i class="on"></i><i></i><i></i><i></i></span>
+        <button class="startbtn" id="toS2">Next: the core principle →</button>
+      </div>
+    </div>
+
+    <div class="introscreen" id="introS2" style="display:none">
+      <div class="ik">Overview · 2 / 4</div>
+      <h3>The principle that drives everything</h3>
+      <div class="principle"><em>"I treat AI outputs as hypotheses to validate — not results to trust."</em><br><br>The model proposes. An evaluation harness checks retrieval quality, groundedness, and policy rules. A qualified human approves, edits, or rejects. Nothing ships on model confidence alone.</div>
+      <p class="obj">This mirrors production patterns from regulated healthcare AI: evaluation gates before release, claim-level grounding checks, structured JSON output, and append-only audit trails.</p>
+      <div class="intronav">
+        <button class="backbtn" id="toS1b">← Back</button>
+        <span class="dots"><i></i><i class="on"></i><i></i><i></i></span>
+        <button class="startbtn" id="toS3">Next: what you'll see →</button>
+      </div>
+    </div>
+
+    <div class="introscreen" id="introS3" style="display:none">
+      <div class="ik">Overview · 3 / 4</div>
+      <h3>What this demo shows</h3>
+      <div class="introfeat">
+        <div class="ifeat"><div class="r">① Live RAG pipeline</div><div class="d">Watch retrieval → generation → grounding → policy gate light up step by step.</div></div>
+        <div class="ifeat"><div class="r">② Hallucination trap</div><div class="d">Question #2 includes a <b>fabricated statistic</b> the model invents — the system blocks it automatically.</div></div>
+        <div class="ifeat"><div class="r">③ Evaluation harness</div><div class="d">hit@k, groundedness %, golden test suite, and exportable audit log.</div></div>
+        <div class="ifeat"><div class="r">④ Governance layer</div><div class="d">Never/Ask/Auto permissions enforced in code — not in prompts.</div></div>
+      </div>
+      <div class="intronav">
+        <button class="backbtn" id="toS2b">← Back</button>
+        <span class="dots"><i></i><i></i><i class="on"></i><i></i></span>
+        <button class="startbtn" id="toS4">Next: how to explore →</button>
+      </div>
+    </div>
+
+    <div class="introscreen" id="introS4" style="display:none">
+      <div class="ik">Overview · 4 / 4</div>
+      <h3>Ready to explore</h3>
+      <p class="obj">The fastest path: click <b>Play the scenario</b> for a 90-second guided walkthrough. Everything below will light up as the pipeline runs. Or pick any sample question manually.</p>
+      <ol>
+        <li><b>Play the scenario</b> — automated tour through 3 questions + golden tests.</li>
+        <li><b>Try question #2</b> — the "eval trap" that catches a numeric hallucination.</li>
+        <li><b>Review the audit log</b> — every step is logged; copy it anytime.</li>
+      </ol>
+      <div class="intronav">
+        <button class="backbtn" id="toS3b">← Back</button>
+        <span class="dots"><i></i><i></i><i></i><i class="on"></i></span>
+        <button class="startbtn" id="introStart">Enter the console →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HOW TO USE OVERLAY -->
+<div class="intro-ov hide" id="howtoOv">
+  <div class="intro">
+    <button class="skip" id="howtoSkip" title="Close">&times;</button>
+    <div class="ik">How to use</div>
+    <h3>Four ways to explore this console</h3>
+    <ol>
+      <li><b>Play the scenario.</b> Top-left button — 90-second guided walkthrough. Watch panels and pipeline nodes light up in sequence.</li>
+      <li><b>Pick a question.</b> Panel <b>1</b> (left) — three sample clinical queries. Question #2 is the hallucination trap.</li>
+      <li><b>Follow the pipeline.</b> Panel <b>2</b> (center) — retrieval hits, draft answer, claim-level grounding, evaluation gate, human review buttons.</li>
+      <li><b>Check governance &amp; eval.</b> Panel <b>3</b> (right) — Never/Ask/Auto policy, groundedness bar, golden tests, audit log.</li>
+    </ol>
+    <button class="startbtn" id="howtoClose" style="width:100%">Got it →</button>
+  </div>
+</div>
+
 <div class="wrap">
 
 <header class="appbar">
-  <div>
-    <h1>Clinical RAG Evaluation Console <span class="badge">Work sample</span></h1>
-    <p class="sub">Grounded retrieval · claim-level validation · Never/Ask/Auto governance · evaluation harness. Fictional protocol data for demonstration.</p>
+  <div class="brand">
+    <span class="logo">⚕</span>
+    <div>
+      <div class="appname">Clinical RAG Evaluation Console <span class="proto">work sample</span></div>
+      <div class="appdesc">Grounded retrieval · claim-level validation · Never/Ask/Auto governance · evaluation harness · fictional protocol data</div>
+    </div>
   </div>
-  <div class="meta">
-    <div class="stat ok"><div class="v" id="stat-hit">—</div><div class="l">Retrieval hit@3</div></div>
-    <div class="stat ok"><div class="v" id="stat-ground">—</div><div class="l">Grounded claims</div></div>
-    <div class="stat warn"><div class="v" id="stat-caught">—</div><div class="l">Hallucinations caught</div></div>
-    <div class="stat"><div class="v" id="stat-gold">—</div><div class="l">Golden tests</div></div>
+  <div class="appmeta">
+    <div class="m"><i>Hit@3</i><span class="v" id="stat-hit">—</span></div>
+    <div class="m"><i>Grounded</i><span class="v" id="stat-ground">—</span></div>
+    <div class="m"><i>Caught</i><span class="v" id="stat-caught">—</span></div>
+    <div class="m"><i>Golden</i><span class="v" id="stat-gold">—</span></div>
   </div>
 </header>
-
-<div class="toolbar">
-  <button class="btn btn-primary" id="btn-tour" type="button">▶ Guided tour (90s)</button>
-  <button class="btn" id="btn-run-gold" type="button">Run golden test suite</button>
-  <button class="btn" id="btn-copy-audit" type="button">Copy audit log</button>
-  <span class="tour-hint">Principle: <strong>outputs are hypotheses to validate</strong> — not results to trust. Model proposes; evaluation gate + human decide.</span>
+<div class="subbar">
+  <span>Fictional life-sciences data — IQVIA Applied AI Science (R1540735)</span>
+  <span>Built by Ainoa Figueroa Vidal</span>
 </div>
 
+<div class="toolbar">
+  <div class="tour">
+    <span class="starthere">Start here</span>
+    <button class="play" id="btn-play"><span>▶</span> Play the scenario</button>
+    <span class="tourhint">90-second walkthrough: a grounded dose query, a <b>hallucination blocked</b>, a clean SOP answer, then golden tests. Sections light up as it runs.</span>
+  </div>
+  <button class="howto" id="btn-howto">ⓘ How to use</button>
+</div>
+
+<div class="narr" id="narr">
+  <span class="act" id="narr-act">Scene</span>
+  <span class="ntext" id="narr-text"></span>
+</div>
+
+<div class="principle-band">
+  <q>"I treat AI outputs as hypotheses to validate — not results to trust."</q>
+  <span>The model proposes · the evaluation gate decides · the human approves</span>
+</div>
+
+<div class="sectionhd"><span class="snum">01</span><div><h3>Live RAG pipeline<div class="sdesc">Watch each stage activate as you run a query — teal = active, green = passed, red = blocked.</div></h3></div></div>
+
+<div class="flowcard spot" id="spot-flow">
+  <div class="flowrow" id="flow-row">
+    <div class="fnode" data-f="query"><div class="fn">💬</div><div class="fl">Query</div><div class="fs" id="fs-query"></div></div>
+    <div class="farrow">→</div>
+    <div class="fnode" data-f="retrieve"><div class="fn">🔍</div><div class="fl">Retrieve</div><div class="fs" id="fs-retrieve"></div></div>
+    <div class="farrow">→</div>
+    <div class="fnode" data-f="generate"><div class="fn">✨</div><div class="fl">Generate</div><div class="fs" id="fs-generate"></div></div>
+    <div class="farrow">→</div>
+    <div class="fnode" data-f="ground"><div class="fn">✓</div><div class="fl">Ground check</div><div class="fs" id="fs-ground"></div></div>
+    <div class="farrow">→</div>
+    <div class="fnode" data-f="policy"><div class="fn">🛡</div><div class="fl">Policy gate</div><div class="fs" id="fs-policy"></div></div>
+    <div class="farrow">→</div>
+    <div class="fnode" data-f="human"><div class="fn">👤</div><div class="fl">Human review</div><div class="fs" id="fs-human"></div></div>
+  </div>
+  <p class="flowcap"><b>Blue path:</b> all claims grounded → queued for human approval. <b>Red path:</b> unsupported claim or hallucination → blocked automatically, never reaches clinical use.</p>
+</div>
+
+<div class="sectionhd"><span class="snum">02</span><div><h3>Interactive console<div class="sdesc">Pick a question, follow the pipeline, inspect claims and structured output.</div></h3></div></div>
+
 <div class="grid">
-  <aside class="panel">
-    <div class="panel-hd">Source corpus (fictional)</div>
-    <div class="panel-bd" style="padding-bottom:8px">
-      <ul class="doc-list" id="doc-list"></ul>
-    </div>
-    <div class="panel-hd">Sample questions</div>
+  <aside class="panel spot" id="spot-left">
+    <div class="panel-hd"><span class="pn">1</span><span class="pt">Source corpus &amp; questions</span></div>
     <div class="panel-bd">
+      <p style="font-size:11px;font-weight:600;color:var(--mute);text-transform:uppercase;margin-bottom:8px">Fictional documents</p>
+      <ul class="doc-list" id="doc-list"></ul>
+      <p style="font-size:11px;font-weight:600;color:var(--mute);text-transform:uppercase;margin:14px 0 8px">Sample questions</p>
       <div class="q-grid" id="q-grid"></div>
     </div>
   </aside>
 
-  <main class="panel">
-    <div class="panel-hd">RAG pipeline · structured output</div>
+  <main class="panel spot" id="spot-main">
+    <div class="panel-hd"><span class="pn">2</span><span class="pt">RAG pipeline · structured output</span></div>
     <div class="panel-bd">
-      <div class="pipeline" id="pipeline">
-        <span class="pipe-step" data-s="retrieve">1 Retrieve</span>
-        <span class="pipe-step" data-s="generate">2 Generate</span>
-        <span class="pipe-step" data-s="ground">3 Ground check</span>
-        <span class="pipe-step" data-s="policy">4 Policy gate</span>
-        <span class="pipe-step" data-s="human">5 Human review</span>
+      <div class="steps" id="steps">
+        <div class="step s-retrieve" data-s="retrieve"><div class="stitle"><span class="num">1</span> Retrieve relevant passages</div><div class="body" id="step-retrieve">Waiting for query…</div></div>
+        <div class="step s-generate" data-s="generate"><div class="stitle"><span class="num">2</span> Generate draft answer</div><div class="body" id="step-generate">—</div></div>
+        <div class="step s-ground" data-s="ground"><div class="stitle"><span class="num">3</span> Claim-level grounding check</div><div class="body" id="step-ground">Each sentence validated against source</div></div>
+        <div class="step s-policy" data-s="policy"><div class="stitle"><span class="num">4</span> Evaluation &amp; policy gate</div><div class="body" id="step-policy">Groundedness threshold + Never/Ask/Auto rules</div></div>
+        <div class="step s-human" data-s="human"><div class="stitle"><span class="num">5</span> Human-in-the-loop review</div><div class="body" id="step-human">Approve · edit · or reject before clinical use</div></div>
       </div>
-      <div class="retrieval" id="retrieval"></div>
-      <div class="answer-box" id="answer-box">
-        <h4>Model answer (draft — not approved)</h4>
-        <p id="answer-text" style="color:var(--muted)">Select a question or start the guided tour.</p>
+      <div id="retrieval"></div>
+      <div class="answer-box">
+        <h4>Model answer <span class="untrusted">draft — not approved</span></h4>
+        <p id="answer-text" style="color:var(--mute)">Select a question or press Play the scenario.</p>
         <div class="claims" id="claims"></div>
         <pre class="json-out" id="json-out"></pre>
       </div>
       <div class="gate-box" id="gate-box">
-        <h4>⚠ Evaluation gate: BLOCKED — human review required</h4>
+        <h4 id="gate-title">⚠ Evaluation gate: BLOCKED</h4>
         <p id="gate-reason"></p>
       </div>
       <div class="actions" id="actions" style="display:none">
-        <button class="btn btn-primary" id="btn-approve" type="button">Approve for clinical use</button>
-        <button class="btn" id="btn-edit" type="button">Edit draft</button>
-        <button class="btn" id="btn-reject" type="button">Reject · regenerate</button>
+        <button class="btn btn-primary" id="btn-approve" type="button">✓ Approve for clinical use</button>
+        <button class="btn" id="btn-edit" type="button">✎ Edit draft</button>
+        <button class="btn" id="btn-reject" type="button">✕ Reject · regenerate</button>
       </div>
     </div>
   </main>
 
-  <aside class="panel">
-    <div class="panel-hd">Permission policy (code-enforced)</div>
+  <aside class="panel spot" id="spot-right">
+    <div class="panel-hd"><span class="pn">3</span><span class="pt">Governance &amp; evaluation</span></div>
     <div class="panel-bd">
-      <div class="perm-ladder">
-        <div class="perm-row auto"><span class="perm-tag">AUTO</span> Retrieve passages · internal summarization</div>
-        <div class="perm-row ask"><span class="perm-tag">ASK</span> Draft answer · save to review queue</div>
-        <div class="perm-row never"><span class="perm-tag">NEVER</span> Auto-publish to EHR · dosing decisions</div>
+      <p style="font-size:11px;font-weight:600;color:var(--mute);text-transform:uppercase;margin-bottom:8px">Permission policy (code-enforced)</p>
+      <div class="perm-ladder" id="perm-ladder">
+        <div class="perm-row auto" data-p="auto"><span class="perm-tag">AUTO</span> Retrieve passages · internal summarization</div>
+        <div class="perm-row ask" data-p="ask"><span class="perm-tag">ASK</span> Draft answer · save to review queue</div>
+        <div class="perm-row never" data-p="never"><span class="perm-tag">NEVER</span> Auto-publish to EHR · dosing decisions</div>
       </div>
-    </div>
-    <div class="panel-hd">Evaluation harness</div>
-    <div class="panel-bd">
+      <p style="font-size:11px;font-weight:600;color:var(--mute);text-transform:uppercase;margin:14px 0 8px">Evaluation harness</p>
       <div class="bar-wrap">
         <div class="bar-label"><span>Groundedness (this query)</span><span id="bar-pct">—</span></div>
-        <div class="bar"><div class="bar-fill" id="bar-fill" style="width:0%"></div></div>
+        <div class="bar"><div class="bar-fill" id="bar-fill"></div></div>
       </div>
-      <table class="eval-table" id="gold-table">
-        <thead><tr><th>Golden test</th><th>Status</th></tr></thead>
-        <tbody id="gold-body"></tbody>
-      </table>
-    </div>
-    <div class="panel-hd">Audit log</div>
-    <div class="panel-bd">
+      <button class="btn btn-primary" id="btn-run-gold" type="button" style="width:100%;margin-bottom:10px">Run golden test suite</button>
+      <table class="eval-table"><thead><tr><th>Golden test</th><th>Status</th></tr></thead><tbody id="gold-body"></tbody></table>
+      <p style="font-size:11px;font-weight:600;color:var(--mute);text-transform:uppercase;margin:14px 0 8px">Audit log</p>
       <div class="audit" id="audit"><span class="ev">[init]</span> Console ready · fictional data · Ainoa Figueroa Vidal</div>
+      <button class="btn" id="btn-copy-audit" type="button" style="width:100%;margin-top:8px">Copy audit log</button>
     </div>
   </aside>
 </div>
 
-<p class="disclaimer"><strong>Fictional data only.</strong> Protocol excerpts and pharmacovigilance scenarios are invented for this work sample. Demonstrates production patterns from regulated healthcare AI: evaluation before release, claim-level grounding, human-in-the-loop, append-only audit. Built for IQVIA Applied AI Science (R1540735).</p>
-
-<footer>
-  Ainoa Figueroa Vidal · <a href="https://github.com/Ainoafv">github.com/Ainoafv</a> ·
-  <a href="https://ainoafv.github.io/regulated-lab-agent-demo/">related: governed agent demo</a>
-</footer>
+<p class="disclaimer"><strong>Fictional data only.</strong> Protocol excerpts and pharmacovigilance scenarios are invented for this work sample. Demonstrates production patterns from regulated healthcare AI: evaluation before release, claim-level grounding, human-in-the-loop, append-only audit.</p>
+<footer>Ainoa Figueroa Vidal · <a href="https://github.com/Ainoafv">github.com/Ainoafv</a> · <a href="https://github.com/Ainoafv/iqvia-clinical-rag-eval-demo">source</a></footer>
 </div>
 
 <div class="modal-ov" id="modal">
   <div class="modal">
     <h3>Human review — edit draft</h3>
-    <p>Simulated clinician review before any answer leaves the evaluation queue.</p>
-    <textarea id="modal-edit" style="width:100%;min-height:100px;padding:10px;border:1px solid var(--line);border-radius:6px;font-family:inherit;font-size:13px"></textarea>
-    <div class="modal-ft" style="margin-top:12px">
+    <p style="font-size:13px;color:var(--mute);margin-bottom:12px">Simulated clinician review before any answer leaves the evaluation queue.</p>
+    <textarea id="modal-edit" style="width:100%;min-height:100px;padding:10px;border:1px solid var(--rule);border-radius:7px;font-family:inherit;font-size:13px"></textarea>
+    <div class="modal-ft">
       <button class="btn" id="modal-cancel" type="button">Cancel</button>
       <button class="btn btn-primary" id="modal-save" type="button">Save &amp; approve</button>
     </div>
@@ -219,18 +451,17 @@ footer a{color:var(--brand2)}
 </div>
 
 <script>
+const $ = id => document.getElementById(id);
 const DOCS = [
-  { id:'p1', title:'Protocol NX-2847 Phase III', meta:'Oncology · enrollment criteria', text:'Primary endpoint: progression-free survival at 24 weeks. Key exclusion: prior PD-1 inhibitor within 12 months. Recommended starting dose: 240 mg Q2W subcutaneous. Dose modifications for Grade 3+ immune-related adverse events per appendix B.' },
+  { id:'p1', title:'Protocol NX-2847 Phase III', meta:'Oncology · enrollment & dosing', text:'Primary endpoint: progression-free survival at 24 weeks. Key exclusion: prior PD-1 inhibitor within 12 months. Recommended starting dose: 240 mg Q2W subcutaneous. Dose modifications for Grade 3+ immune-related adverse events per appendix B.' },
   { id:'p2', title:'Investigator Brochure §4.2', meta:'Safety · adverse events', text:'Most common TEAEs (≥15%): fatigue 22%, nausea 18%, rash 16%. Serious TEAE rate in pooled analysis: 12.4%. No treatment-related deaths in the primary cohort (n=412). Hepatic monitoring required at baseline and every 4 cycles.' },
   { id:'p3', title:'Pharmacovigilance SOP v3.1', meta:'Internal · case processing', text:'Expedited reporting threshold: unexpected fatal outcome, life-threatening, hospitalization >24h, congenital anomaly. Standard timeline: initial report within 15 calendar days of awareness. Causality assessment requires medically qualified reviewer sign-off before regulatory submission.' }
 ];
-
 const QUESTIONS = [
   { id:'q1', label:'Starting dose & route', text:'What is the recommended starting dose and administration route for NX-2847?', docId:'p1', trap:false },
-  { id:'q2', label:'Serious AE rate (TRAP)', text:'What is the serious treatment-emergent adverse event rate in the primary cohort?', docId:'p2', trap:true },
-  { id:'q3', label:'Expedited reporting', text:'When is expedited pharmacovigilance reporting required?', docId:'p3', trap:false }
+  { id:'q2', label:'Serious AE rate · EVAL TRAP', text:'What is the serious treatment-emergent adverse event rate in the primary cohort?', docId:'p2', trap:true },
+  { id:'q3', label:'Expedited reporting rules', text:'When is expedited pharmacovigilance reporting required?', docId:'p3', trap:false }
 ];
-
 const ANSWERS = {
   q1: {
     text:'The recommended starting dose for NX-2847 is 240 mg administered Q2W (every two weeks) subcutaneous.',
@@ -239,9 +470,10 @@ const ANSWERS = {
       { t:'Q2W subcutaneous route', status:'supported', src:'Protocol NX-2847' },
       { t:'Oral formulation available', status:'unsupported', src:'— not in source' }
     ],
-    json:{ drug:'NX-2847', dose_mg:240, route:'subcutaneous', frequency:'Q2W', confidence:0.94, grounded:true },
-    hit:1, groundPct:67, caught:1, block:true,
-    reason:'1 unsupported claim detected (oral formulation). Policy: ASK — route to human reviewer before clinical use.'
+    json:{ drug:'NX-2847', dose_mg:240, route:'subcutaneous', frequency:'Q2W', confidence:0.94, grounded:false },
+    hit:100, groundPct:67, caught:1, block:true,
+    reason:'1 unsupported claim detected (oral formulation). Policy: ASK — routed to human reviewer. Auto-publish to EHR: NEVER.',
+    narr:'A dose query — retrieval finds the protocol. Two claims are grounded, but the model also invents an oral formulation. Gate blocks release.'
   },
   q2: {
     text:'The serious TEAE rate in the primary cohort was 12.4%. Hospitalization rate was 18.7%.',
@@ -250,8 +482,9 @@ const ANSWERS = {
       { t:'Hospitalization rate 18.7%', status:'unsupported', src:'— invented; not in source' }
     ],
     json:{ serious_teae_pct:12.4, hospitalization_pct:null, hallucination_flag:true, confidence:0.71, grounded:false },
-    hit:1, groundPct:50, caught:1, block:true,
-    reason:'Hallucination detected: 18.7% hospitalization rate is NOT in source document. Classic LLM confabulation on numeric data — blocked automatically.'
+    hit:100, groundPct:50, caught:1, block:true,
+    reason:'Hallucination detected: 18.7% hospitalization rate is NOT in the source document. Classic LLM confabulation on numeric data — blocked automatically.',
+    narr:'The eval trap. The model correctly cites 12.4% serious TEAEs — then fabricates 18.7% hospitalization. The grounding engine catches it and blocks.'
   },
   q3: {
     text:'Expedited reporting is required for unexpected fatal outcome, life-threatening events, hospitalization >24h, and congenital anomaly. Initial report within 15 calendar days.',
@@ -261,181 +494,283 @@ const ANSWERS = {
       { t:'MQ sign-off before submission', status:'supported', src:'Pharmacovigilance SOP' }
     ],
     json:{ expedited_triggers:['fatal','life_threatening','hospitalization_gt_24h','congenital_anomaly'], timeline_days:15, mq_review_required:true, grounded:true },
-    hit:1, groundPct:100, caught:0, block:false,
-    reason:''
+    hit:100, groundPct:100, caught:0, block:false,
+    reason:'',
+    narr:'Clean pass. All three claims grounded at 100%. Queued for human approval — policy never auto-publishes to clinical systems.'
   }
 };
-
 const GOLD = [
-  { id:'g1', name:'Retrieval returns correct doc', q:'q1' },
-  { id:'g2', name:'Catches numeric hallucination', q:'q2' },
-  { id:'g3', name:'100% grounded on SOP query', q:'q3' },
-  { id:'g4', name:'Structured JSON schema valid', q:'q1' },
-  { id:'g5', name:'NEVER policy blocks EHR write', q:'q2' }
+  { id:'g1', name:'Retrieval returns correct doc' },
+  { id:'g2', name:'Catches numeric hallucination' },
+  { id:'g3', name:'100% grounded on SOP query' },
+  { id:'g4', name:'Structured JSON schema valid' },
+  { id:'g5', name:'NEVER policy blocks EHR write' }
 ];
 
-let currentQ = null;
-let goldResults = {};
 let tourRunning = false;
+let goldResults = {};
+GOLD.forEach(g => { goldResults[g.id] = null; });
 
 function log(msg, cls='') {
-  const el = document.getElementById('audit');
   const t = new Date().toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
-  el.innerHTML += `\n<span class="ev">[${t}]</span> <span class="${cls}">${msg}</span>`;
-  el.scrollTop = el.scrollHeight;
+  $('audit').innerHTML += `\n<span class="ev">[${t}]</span> <span class="${cls}">${msg}</span>`;
+  $('audit').scrollTop = $('audit').scrollHeight;
 }
 
-function setPipe(step) {
-  document.querySelectorAll('.pipe-step').forEach(s => {
-    s.classList.remove('active','done');
-    const order = ['retrieve','generate','ground','policy','human'];
-    const idx = order.indexOf(step);
-    const myIdx = order.indexOf(s.dataset.s);
-    if (myIdx < idx) s.classList.add('done');
-    if (myIdx === idx) s.classList.add('active');
+function narr(act, text) {
+  $('narr-act').textContent = act;
+  $('narr-text').innerHTML = text;
+  $('narr').classList.add('show');
+}
+
+function hideNarr() { $('narr').classList.remove('show'); }
+
+function spotlight(...ids) {
+  document.body.classList.add('dim');
+  document.querySelectorAll('.spot').forEach(el => el.classList.remove('on'));
+  ids.forEach(id => { const el = $(id); if (el) el.classList.add('on'); });
+}
+
+function clearSpotlight() {
+  document.body.classList.remove('dim');
+  document.querySelectorAll('.spot').forEach(el => el.classList.remove('on'));
+}
+
+function setFlowNode(name, state, status='') {
+  const node = document.querySelector(`.fnode[data-f="${name}"]`);
+  if (!node) return;
+  node.classList.remove('active','done','blocked');
+  if (state === 'active') node.classList.add('active');
+  if (state === 'done') node.classList.add('done');
+  if (state === 'blocked') node.classList.add('blocked');
+  const fs = $('fs-' + name);
+  if (fs) fs.textContent = status;
+}
+
+function resetFlow() {
+  ['query','retrieve','generate','ground','policy','human'].forEach(n => {
+    setFlowNode(n, '', '');
+    $('fs-' + n).textContent = '';
   });
+  document.querySelectorAll('.farrow').forEach(a => a.classList.remove('lit'));
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('show','glow'));
+  document.querySelectorAll('.perm-row').forEach(p => p.classList.remove('lit'));
+}
+
+function showStep(name) {
+  const step = document.querySelector(`.step[data-s="${name}"]`);
+  if (step) { step.classList.add('show','glow'); }
 }
 
 function renderDocs() {
-  const ul = document.getElementById('doc-list');
-  ul.innerHTML = DOCS.map(d => `<li data-id="${d.id}"><div class="dt">${d.title}</div><div class="dm">${d.meta}</div></li>`).join('');
+  $('doc-list').innerHTML = DOCS.map(d => `<li data-id="${d.id}"><div class="dt">${d.title}</div><div class="dm">${d.meta}</div></li>`).join('');
 }
 
 function renderQuestions() {
-  document.getElementById('q-grid').innerHTML = QUESTIONS.map(q =>
-    `<button class="q-chip" data-q="${q.id}"><b>${q.label}</b>${q.text}${q.trap ? ' <span style="color:var(--bad);font-size:10px">· eval trap</span>' : ''}</button>`
+  $('q-grid').innerHTML = QUESTIONS.map(q =>
+    `<button class="q-chip" data-q="${q.id}"><b>${q.label}</b>${q.text}${q.trap ? '<span class="trap">eval trap</span>' : ''}</button>`
   ).join('');
-  document.querySelectorAll('.q-chip').forEach(b => b.onclick = () => runQuery(b.dataset.q));
+  document.querySelectorAll('.q-chip').forEach(b => b.onclick = () => { if (!tourRunning) runQuery(b.dataset.q); });
 }
 
 function renderGoldTable() {
-  document.getElementById('gold-body').innerHTML = GOLD.map(g => {
+  $('gold-body').innerHTML = GOLD.map(g => {
     const st = goldResults[g.id];
     const cls = st === 'pass' ? 'pass' : st === 'fail' ? 'fail' : 'pending';
     const txt = st === 'pass' ? 'PASS' : st === 'fail' ? 'FAIL' : '—';
-    return `<tr><td>${g.name}</td><td class="${cls}">${txt}</td></tr>`;
+    return `<tr data-g="${g.id}"><td>${g.name}</td><td class="${cls}">${txt}</td></tr>`;
   }).join('');
-}
-
-async function runQuery(qid, fromTour=false) {
-  if (tourRunning && !fromTour) return;
-  currentQ = qid;
-  const q = QUESTIONS.find(x => x.id === qid);
-  const ans = ANSWERS[qid];
-  document.querySelectorAll('.q-chip').forEach(c => c.style.outline = c.dataset.q === qid ? '2px solid var(--brand)' : '');
-  document.getElementById('actions').style.display = 'none';
-  document.getElementById('gate-box').classList.remove('show');
-  document.getElementById('json-out').classList.remove('show');
-  document.getElementById('claims').innerHTML = '';
-  document.getElementById('answer-text').textContent = 'Running pipeline…';
-  document.getElementById('retrieval').innerHTML = '';
-  log(`Query: "${q.text.substring(0,50)}…"`, '');
-
-  const steps = ['retrieve','generate','ground','policy','human'];
-  for (const s of steps) {
-    setPipe(s);
-    await sleep(s === 'retrieve' ? 600 : 400);
-  }
-
-  const doc = DOCS.find(d => d.id === q.docId);
-  document.getElementById('retrieval').innerHTML = `
-    <div class="ret-item"><div class="score">hit@1 · score 0.92</div>${highlight(doc.text, ans.claims.filter(c=>c.status==='supported').map(c=>c.t.split(' ')[0]))}</div>
-    <div class="ret-item" style="opacity:.5"><div class="score">rank 2 · score 0.41</div>${DOCS[1].text.substring(0,120)}…</div>`;
-
-  document.getElementById('answer-text').innerHTML = ans.text;
-  document.getElementById('claims').innerHTML = ans.claims.map(c =>
-    `<div class="claim ${c.status}"><span class="claim-tag">${c.status}</span><span>${c.t} <em style="color:var(--muted);font-size:11px">(${c.src})</em></span></div>`
-  ).join('');
-
-  document.getElementById('json-out').textContent = JSON.stringify(ans.json, null, 2);
-  document.getElementById('json-out').classList.add('show');
-
-  document.getElementById('stat-hit').textContent = (ans.hit * 100).toFixed(0) + '%';
-  document.getElementById('stat-ground').textContent = ans.groundPct + '%';
-  document.getElementById('stat-caught').textContent = ans.caught;
-  document.getElementById('bar-pct').textContent = ans.groundPct + '%';
-  document.getElementById('bar-fill').style.width = ans.groundPct + '%';
-
-  if (ans.block) {
-    document.getElementById('gate-box').classList.add('show');
-    document.getElementById('gate-reason').textContent = ans.reason;
-    document.getElementById('actions').style.display = 'flex';
-    log('GATE BLOCKED · ' + ans.reason.substring(0,60) + '…', 'bad');
-  } else {
-    document.getElementById('actions').style.display = 'flex';
-    log('Pipeline complete · all claims grounded · ready for human approval', 'ok');
-  }
-  steps.forEach(s => document.querySelector(`[data-s="${s}"]`).classList.add('done'));
-  document.querySelectorAll('.pipe-step').forEach(s => s.classList.remove('active'));
 }
 
 function highlight(text, terms) {
   let t = text;
-  terms.forEach(term => { if(term) t = t.replace(new RegExp(term,'gi'), m => `<mark>${m}</mark>`); });
+  terms.forEach(term => { if (term && term.length > 2) t = t.replace(new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'), m => `<mark>${m}</mark>`); });
   return t;
 }
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-async function runGoldenSuite() {
-  log('Running golden test suite (5 tests)…', '');
-  document.getElementById('btn-run-gold').disabled = true;
-  goldResults = { g1:'pass', g2:'pass', g3:'pass', g4:'pass', g5:'pass' };
-  for (let i = 0; i < GOLD.length; i++) {
-    await sleep(300);
-    renderGoldTable();
+async function runQuery(qid, fromTour=false) {
+  if (tourRunning && !fromTour) return;
+  const q = QUESTIONS.find(x => x.id === qid);
+  const ans = ANSWERS[qid];
+
+  document.querySelectorAll('.q-chip').forEach(c => c.classList.toggle('sel', c.dataset.q === qid));
+  document.querySelectorAll('.doc-list li').forEach(li => li.classList.toggle('on', li.dataset.id === q.docId));
+
+  $('actions').style.display = 'none';
+  $('gate-box').classList.remove('show','blocked');
+  $('json-out').classList.remove('show');
+  $('claims').innerHTML = '';
+  $('retrieval').innerHTML = '';
+  $('answer-text').textContent = 'Running pipeline…';
+  $('answer-text').style.color = 'var(--mute)';
+  resetFlow();
+
+  if (fromTour) narr('Scene', ans.narr);
+  log(`Query: "${q.text.substring(0,55)}…"`, '');
+
+  spotlight('spot-flow', 'spot-left');
+  setFlowNode('query', 'active', 'received');
+  await sleep(500);
+
+  spotlight('spot-flow', 'spot-main');
+  setFlowNode('query', 'done', '✓');
+  setFlowNode('retrieve', 'active', 'searching…');
+  showStep('retrieve');
+  $('step-retrieve').textContent = 'Embedding query · searching vector index over protocol corpus…';
+  await sleep(700);
+
+  const doc = DOCS.find(d => d.id === q.docId);
+  const terms = ans.claims.filter(c => c.status === 'supported').map(c => c.t.split(' ')[0]);
+  $('retrieval').innerHTML = `
+    <div class="ret-item" id="r1"><div class="score">hit@1 · cosine 0.92</div>${highlight(doc.text, terms)}</div>
+    <div class="ret-item" id="r2" style="opacity:.45"><div class="score">rank 2 · cosine 0.41</div>${DOCS[1].text.substring(0,100)}…</div>`;
+  setTimeout(() => { $('r1').classList.add('show'); setTimeout(() => $('r2').classList.add('show'), 200); }, 50);
+
+  setFlowNode('retrieve', 'done', 'hit@1');
+  setFlowNode('generate', 'active', 'drafting…');
+  showStep('generate');
+  $('step-generate').textContent = 'LLM generating answer from retrieved context…';
+  await sleep(600);
+
+  $('answer-text').textContent = ans.text;
+  $('answer-text').style.color = 'var(--ink)';
+  setFlowNode('generate', 'done', '✓');
+  setFlowNode('ground', 'active', 'validating…');
+  showStep('ground');
+  await sleep(500);
+
+  for (let i = 0; i < ans.claims.length; i++) {
+    await sleep(350);
+    const c = ans.claims[i];
+    const div = document.createElement('div');
+    div.className = `claim ${c.status}`;
+    div.innerHTML = `<span class="claim-tag">${c.status}</span><span>${c.t} <em style="color:var(--mute);font-size:11px">(${c.src})</em></span>`;
+    $('claims').appendChild(div);
+    setTimeout(() => div.classList.add('show'), 10);
+    if (c.status === 'unsupported') {
+      setFlowNode('ground', 'blocked', '1 unsupported');
+      log(`CLAIM BLOCKED: "${c.t}"`, 'bad');
+    }
   }
-  document.getElementById('stat-gold').textContent = '5/5';
+
+  if (!ans.claims.some(c => c.status === 'unsupported')) {
+    setFlowNode('ground', 'done', ans.groundPct + '%');
+  }
+  await sleep(400);
+
+  setFlowNode('policy', 'active', 'checking…');
+  showStep('policy');
+  document.querySelector('.perm-row[data-p="ask"]').classList.add('lit');
+  await sleep(500);
+
+  $('json-out').textContent = JSON.stringify(ans.json, null, 2);
+  $('json-out').classList.add('show');
+  $('stat-hit').textContent = ans.hit + '%';
+  $('stat-ground').textContent = ans.groundPct + '%';
+  $('stat-caught').textContent = ans.caught;
+  $('bar-pct').textContent = ans.groundPct + '%';
+  $('bar-fill').style.width = ans.groundPct + '%';
+
+  if (ans.block) {
+    setFlowNode('policy', 'blocked', 'BLOCKED');
+    $('gate-box').classList.add('show', ans.caught ? 'blocked' : 'show');
+    $('gate-title').textContent = ans.caught ? '🛑 Evaluation gate: BLOCKED — hallucination caught' : '⚠ Evaluation gate: BLOCKED — human review required';
+    $('gate-reason').textContent = ans.reason;
+    $('step-policy').textContent = ans.reason;
+    log('GATE BLOCKED · ' + ans.reason.substring(0,70) + '…', 'bad');
+  } else {
+    setFlowNode('policy', 'done', 'PASS');
+    $('step-policy').textContent = 'All claims grounded · passed evaluation threshold';
+    log('Pipeline complete · all claims grounded · ready for human approval', 'ok');
+  }
+
+  setFlowNode('human', 'active', 'awaiting…');
+  showStep('human');
+  $('actions').style.display = 'flex';
+  spotlight('spot-main', 'spot-right');
+  document.querySelectorAll('.farrow').forEach(a => a.classList.add('lit'));
+  await sleep(300);
+  if (!fromTour) clearSpotlight();
+}
+
+async function runGoldenSuite() {
+  spotlight('spot-right');
+  narr('Eval harness', 'Running the <b>golden test suite</b> — 5 regression tests that must pass before any model update ships.');
+  log('Running golden test suite (5 tests)…', '');
+  $('btn-run-gold').disabled = true;
+  for (let i = 0; i < GOLD.length; i++) {
+    await sleep(400);
+    goldResults[GOLD[i].id] = 'pass';
+    renderGoldTable();
+    const row = document.querySelector(`tr[data-g="${GOLD[i].id}"]`);
+    if (row) { row.classList.add('flash'); setTimeout(() => row.classList.remove('flash'), 600); }
+  }
+  $('stat-gold').textContent = '5/5';
   log('Golden suite: 5/5 PASS', 'ok');
-  document.getElementById('btn-run-gold').disabled = false;
+  $('btn-run-gold').disabled = false;
 }
 
-async function guidedTour() {
+async function playScenario() {
   tourRunning = true;
-  document.getElementById('btn-tour').disabled = true;
-  log('Guided tour started', '');
+  document.body.classList.add('running');
+  $('btn-play').disabled = true;
+  log('Guided scenario started', 'warn');
+  narr('Welcome', 'Starting the <b>90-second walkthrough</b>. Watch the pipeline diagram and panels light up as each stage runs.');
+
   await runQuery('q1', true);
-  await sleep(2000);
+  await sleep(2800);
   await runQuery('q2', true);
-  await sleep(2500);
+  await sleep(3200);
   await runQuery('q3', true);
-  await sleep(1500);
+  await sleep(2200);
   await runGoldenSuite();
-  log('Tour complete — try Q2 (eval trap) to see hallucination block', 'ok');
+  await sleep(1500);
+
+  narr('Done', 'Tour complete. Try <b>question #2</b> again manually — or explore approve/reject/edit on any blocked answer.');
+  log('Guided scenario complete', 'ok');
   tourRunning = false;
-  document.getElementById('btn-tour').disabled = false;
+  document.body.classList.remove('running');
+  $('btn-play').disabled = false;
+  clearSpotlight();
 }
 
-document.getElementById('btn-tour').onclick = guidedTour;
-document.getElementById('btn-run-gold').onclick = runGoldenSuite;
-document.getElementById('btn-copy-audit').onclick = () => {
-  navigator.clipboard.writeText(document.getElementById('audit').innerText);
-  log('Audit log copied to clipboard', 'ok');
-};
-document.getElementById('btn-approve').onclick = () => {
-  log('Human approved answer · logged to audit trail', 'ok');
-  document.getElementById('gate-box').classList.remove('show');
-};
-document.getElementById('btn-reject').onclick = () => {
-  log('Answer rejected · queued for regeneration', 'bad');
-  document.getElementById('answer-text').textContent = 'Rejected — awaiting regeneration.';
-  document.getElementById('claims').innerHTML = '';
-};
-document.getElementById('btn-edit').onclick = () => {
-  document.getElementById('modal-edit').value = document.getElementById('answer-text').textContent;
-  document.getElementById('modal').classList.add('open');
-};
-document.getElementById('modal-cancel').onclick = () => document.getElementById('modal').classList.remove('open');
-document.getElementById('modal-save').onclick = () => {
-  document.getElementById('answer-text').textContent = document.getElementById('modal-edit').value;
-  document.getElementById('modal').classList.remove('open');
-  log('Human edited draft and approved', 'ok');
-};
+// ---- Intro carousel ----
+function showIntro(n) {
+  [1,2,3,4].forEach(i => { $('introS'+i).style.display = i===n ? 'block' : 'none'; });
+}
+function closeIntro() { $('introOv').classList.add('hide'); }
+function closeHowto() { $('howtoOv').classList.add('hide'); }
+
+$('toS2').onclick = () => showIntro(2);
+$('toS3').onclick = () => showIntro(3);
+$('toS4').onclick = () => showIntro(4);
+$('toS1b').onclick = () => showIntro(1);
+$('toS2b').onclick = () => showIntro(2);
+$('toS3b').onclick = () => showIntro(3);
+$('introStart').onclick = closeIntro;
+$('introSkip').onclick = closeIntro;
+$('introOv').onclick = e => { if (e.target === $('introOv')) closeIntro(); };
+
+$('btn-howto').onclick = () => $('howtoOv').classList.remove('hide');
+$('howtoClose').onclick = closeHowto;
+$('howtoSkip').onclick = closeHowto;
+$('howtoOv').onclick = e => { if (e.target === $('howtoOv')) closeHowto(); };
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeIntro(); closeHowto(); } });
+
+$('btn-play').onclick = playScenario;
+$('btn-run-gold').onclick = runGoldenSuite;
+$('btn-copy-audit').onclick = () => { navigator.clipboard.writeText($('audit').innerText); log('Audit log copied', 'ok'); };
+$('btn-approve').onclick = () => { log('Human approved answer · logged to audit trail', 'ok'); $('gate-box').classList.remove('show'); setFlowNode('human','done','approved'); };
+$('btn-reject').onclick = () => { log('Answer rejected · queued for regeneration', 'bad'); $('answer-text').textContent = 'Rejected — awaiting regeneration.'; $('claims').innerHTML = ''; setFlowNode('human','blocked','rejected'); };
+$('btn-edit').onclick = () => { $('modal-edit').value = $('answer-text').textContent; $('modal').classList.add('open'); };
+$('modal-cancel').onclick = () => $('modal').classList.remove('open');
+$('modal-save').onclick = () => { $('answer-text').textContent = $('modal-edit').value; $('modal').classList.remove('open'); log('Human edited draft and approved', 'ok'); setFlowNode('human','done','edited'); };
 
 renderDocs();
 renderQuestions();
 renderGoldTable();
-GOLD.forEach(g => { goldResults[g.id] = null; });
 </script>
 </body>
 </html>
