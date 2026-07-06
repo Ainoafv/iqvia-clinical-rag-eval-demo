@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Clinical RAG Evaluation Console · Applied AI Science · Ainoa Figueroa Vidal</title>
-<!-- v5 · IQVIA Apollo palette · modal intro · vertical flow · tour fix -->
-<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- v10 · carousel matches console chrome -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --iqvia-blue:#002B5C; --iqvia-green:#00A651; --iqvia-white:#FFFFFF;
@@ -14,100 +14,101 @@
   --bad:#c41e3a; --bad-bg:#fde8ec; --running:#2563eb; --running-bg:#e8f0fe;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:"Source Sans 3",system-ui,sans-serif;background:linear-gradient(165deg,#e8ecf2 0%,#eef1f5 40%,#f4f6f9 100%);color:#1a2b3c;font-size:16px;line-height:1.5;min-height:100vh}
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:linear-gradient(165deg,#e8ecf2 0%,#eef1f5 40%,#f4f6f9 100%);color:#1e293b;font-size:15px;line-height:1.6;min-height:100vh;-webkit-font-smoothing:antialiased}
 body.running .spot.on{box-shadow:0 0 0 3px rgba(0,166,81,.45),0 12px 40px rgba(0,43,92,.18)!important}
 .wrap{max-width:1480px;margin:0 auto;padding:20px 24px 72px}
 
-/* INTRO — modal overlay on main page (blurred backdrop + white card) */
-.intro-ov{position:fixed;inset:0;background:rgba(0,43,92,.55);backdrop-filter:blur(6px);z-index:100;display:flex;align-items:center;justify-content:center;padding:24px;overflow-y:auto}
+/* INTRO — same chrome as appbar / toolbar */
+.intro-ov{position:fixed;inset:0;background:rgba(0,43,92,.55);backdrop-filter:blur(8px);z-index:100;display:flex;align-items:center;justify-content:center;padding:24px;overflow-y:auto}
 .intro-ov.hide{display:none}
-.intro{background:linear-gradient(180deg,#fff 0%,#f8fafc 55%,#eef2f7 100%);border:1px solid #c5d0de;border-top:4px solid var(--iqvia-green);border-radius:8px;max-width:640px;width:100%;padding:36px 40px 28px;box-shadow:0 24px 80px rgba(0,43,92,.28),inset 0 1px 0 rgba(255,255,255,.9);position:relative;color:var(--ink);max-height:calc(100vh - 48px);overflow-y:auto}
-.intro .skip{position:absolute;top:16px;right:18px;border:none;background:transparent;color:var(--mute);font-size:22px;cursor:pointer;line-height:1;font-family:inherit}
-.intro .skip:hover{color:var(--iqvia-blue)}
-.intro-progress{display:flex;gap:5px;margin-bottom:24px}
-.intro-progress span{flex:1;height:3px;background:#dde4ec;border-radius:2px;transition:.3s}
-.intro-progress span.on{background:linear-gradient(90deg,var(--iqvia-blue),var(--iqvia-green))}
-.intro-kicker{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--iqvia-green);margin-bottom:10px}
-.intro h2{font-size:26px;font-weight:700;line-height:1.2;color:var(--iqvia-blue);letter-spacing:-.02em;margin-bottom:14px}
-.intro-lead{font-size:16px;line-height:1.55;color:#475569;margin-bottom:20px}
-.intro-lead strong{color:var(--ink)}
-.intro-flow{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
-.if-step{padding:8px 14px;background:linear-gradient(180deg,#f4f7fa,#e8ecf2);border:1px solid #c5d0de;font-size:13px;font-weight:600;color:var(--mute);border-radius:4px;transition:.25s}
-.if-step.on{background:linear-gradient(180deg,#e6f5ec,#ccebd9);border-color:var(--iqvia-green);color:var(--iqvia-blue)}
-.intro-quote{font-size:18px;font-weight:600;line-height:1.45;color:var(--iqvia-blue);border-left:4px solid var(--iqvia-green);padding:16px 20px;margin-bottom:20px;background:linear-gradient(90deg,#f0f7ff,#f8fafc);border-radius:0 6px 6px 0}
-.intro-nav{display:flex;gap:12px;align-items:center;margin-top:24px;padding-top:20px;border-top:1px solid #dde4ec}
-.intro-nav button{font-family:inherit;font-size:14px;font-weight:600;padding:12px 24px;border-radius:4px;cursor:pointer}
-.btn-enter{background:linear-gradient(180deg,#00b35a,var(--iqvia-green));color:#fff;border:none;flex:1;box-shadow:0 2px 8px rgba(0,166,81,.25)}
-.btn-enter:hover{filter:brightness(1.05)}
-.btn-back-intro{background:#fff;color:var(--mute);border:1px solid #c5d0de!important}
-.btn-back-intro:hover{border-color:var(--iqvia-blue)!important;color:var(--iqvia-blue)}
-.intro-dots{display:flex;gap:8px;margin-left:auto}
-.intro-dots i{width:8px;height:8px;border-radius:50%;background:#dde4ec;display:block;transition:.2s}
-.intro-dots i.on{background:var(--iqvia-green);transform:scale(1.15)}
+.intro{max-width:720px;width:100%;border-radius:10px;overflow:hidden;border:1px solid #1a3d6b;box-shadow:0 24px 80px rgba(0,43,92,.32);max-height:calc(100vh - 48px);display:flex;flex-direction:column;background:#fff}
+.intro-banner{background:linear-gradient(135deg,#002B5C 0%,#1a3d6b 42%,#4a6278 100%);padding:26px 36px 22px;color:#fff;position:relative;flex-shrink:0;box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
+.intro-banner .skip{position:absolute;top:14px;right:16px;border:none;background:rgba(255,255,255,.1);color:rgba(255,255,255,.85);font-size:20px;cursor:pointer;line-height:1;font-family:inherit;width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.2)}
+.intro-banner .skip:hover{background:rgba(255,255,255,.18);color:#fff}
+.intro-progress{display:flex;gap:4px;margin-bottom:18px;padding-right:36px}
+.intro-progress span{flex:1;height:2px;background:rgba(255,255,255,.22);border-radius:1px;transition:.3s}
+.intro-progress span.on{background:linear-gradient(90deg,rgba(255,255,255,.45),rgba(255,255,255,.95))}
+.intro-kicker{font-size:12px;font-weight:500;color:rgba(255,255,255,.72);margin-bottom:6px;letter-spacing:.01em}
+.intro-banner h2{font-size:21px;font-weight:600;line-height:1.3;color:#fff;letter-spacing:-.02em;margin:0}
+.intro-body{padding:26px 36px 8px;background:linear-gradient(180deg,#f6f8fb 0%,#fff 100%);overflow-y:auto;flex:1;min-height:0}
+.intro-lead{font-size:15px;line-height:1.65;color:#334155;margin-bottom:0}
+.intro-lead strong{color:var(--iqvia-blue);font-weight:600}
+.intro-quote{font-size:16px;font-weight:500;line-height:1.55;color:var(--iqvia-blue);padding:18px 20px;margin-bottom:18px;background:linear-gradient(135deg,#eef2f7,#fff);border:1px solid #c5d0de;border-radius:8px}
+.intro-arch{margin:18px 0 0}
+.arch-timeline{border:1px solid #c5d0de;border-radius:8px;background:#fff;overflow:hidden;box-shadow:0 1px 4px rgba(0,43,92,.04)}
+.arch-step{display:grid;grid-template-columns:48px 1fr;gap:0;border-bottom:1px solid #eef1f5;min-height:64px}
+.arch-step:last-child{border-bottom:none}
+.arch-step-rail{display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#f4f7fa,#eef2f7);border-right:1px solid #eef1f5}
+.arch-step:not(:last-child) .arch-step-rail{position:relative}
+.arch-step:not(:last-child) .arch-step-rail::after{content:'';position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);width:2px;height:20px;background:#c5d0de;z-index:1}
+.arch-num{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#002B5C,#3d5a80);color:#fff;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;position:relative;z-index:2}
+.arch-step.trap .arch-num{background:linear-gradient(135deg,#c41e3a,#8b1528)}
+.arch-step-body{padding:14px 18px;display:flex;flex-direction:column;justify-content:center}
+.arch-step-title{font-size:14px;font-weight:600;color:#1e293b;line-height:1.35;margin-bottom:2px}
+.arch-step-desc{font-size:13px;color:#64748b;line-height:1.5}
+.arch-step.trap{background:linear-gradient(90deg,#fffafb,#fff)}
+.arch-step.trap .arch-step-title{color:var(--bad)}
+.info-box{background:linear-gradient(135deg,#f4f7fa 0%,#fff 100%);border:1px solid #c5d0de;border-radius:8px;padding:14px 18px;margin-top:16px;font-size:14px;line-height:1.6;color:#475569}
+.info-box strong{color:var(--iqvia-blue);font-weight:600}
+.watch-list{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.watch-item{display:grid;grid-template-columns:36px 1fr;gap:14px;align-items:start;padding:14px 16px;background:#fff;border:1px solid #c5d0de;border-radius:8px;box-shadow:0 1px 3px rgba(0,43,92,.04)}
+.watch-n{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#002B5C,#3d5a80);color:#fff;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center}
+.watch-item strong{color:#1e293b;font-weight:600;font-size:14px;display:block;margin-bottom:2px}
+.watch-item span.desc{font-size:13px;color:#64748b;line-height:1.55;display:block}
+.watch-item.trap{border-color:#e8b4bc;background:linear-gradient(135deg,#fffbfc,#fff)}
+.watch-item.trap .watch-n{background:linear-gradient(135deg,#c41e3a,#8b1528)}
+.watch-item.trap strong{color:var(--bad)}
+.intro-ready{padding:4px 0}
+.intro-ready .intro-lead{text-align:center}
+.intro-nav{display:flex;gap:12px;align-items:center;padding:18px 36px 24px;background:#fff;border-top:1px solid #dde4ec;flex-shrink:0}
+.intro-nav button{font-family:inherit;font-size:14px;font-weight:600;padding:12px 22px;border-radius:6px;cursor:pointer;transition:.15s}
+.btn-enter{background:linear-gradient(180deg,#00c964,var(--iqvia-green));color:#fff;border:none;flex:1;box-shadow:0 2px 10px rgba(0,166,81,.3)}
+.btn-enter:hover{filter:brightness(1.04);box-shadow:0 3px 14px rgba(0,166,81,.38)}
+.btn-back-intro{background:#fff;color:#64748b;border:1px solid #c5d0de!important}
+.btn-back-intro:hover{border-color:var(--iqvia-blue)!important;color:var(--iqvia-blue);background:#f8fafc}
+.intro-dots{display:flex;gap:6px;margin-left:auto}
+.intro-dots i{width:7px;height:7px;border-radius:50%;background:#dde4ec;display:block;transition:.2s}
+.intro-dots i.on{background:var(--iqvia-blue);transform:scale(1.2)}
 
-.callout{background:linear-gradient(135deg,#f0f7ff 0%,#fff 50%,#f4f6f9 100%);border:1px solid #b8c9de;border-left:4px solid var(--iqvia-green);padding:16px 22px;margin:0 0 20px;font-size:15px;line-height:1.5;color:#334155}
-.callout strong{color:var(--iqvia-blue)}
+.callout{background:linear-gradient(135deg,#f4f7fa 0%,#fff 55%,#eef2f7 100%);border:1px solid #c5d0de;border-radius:8px;padding:16px 22px;margin:0 0 20px;font-size:15px;line-height:1.55;color:#334155;box-shadow:0 2px 10px rgba(0,43,92,.05)}
+.callout strong{color:var(--iqvia-blue);font-weight:600}
 
-/* HEADER */
-.topstripe{height:4px;background:linear-gradient(90deg,var(--iqvia-blue) 70%,var(--iqvia-green))}
-.appbar{background:linear-gradient(180deg,#fff,#f8fafc);border:1px solid var(--rule);padding:24px 32px;display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between;align-items:flex-start;box-shadow:0 2px 12px rgba(0,43,92,.06)}
-.brand-block h1{font-size:24px;font-weight:700;color:var(--iqvia-blue);letter-spacing:-.02em}
-.brand-block .tagline{font-size:15px;color:var(--mute);margin-top:6px;max-width:560px}
-.worksample{display:inline-block;margin-top:10px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--iqvia-green);border:1px solid var(--iqvia-green);padding:4px 12px}
-
-/* GOVERNANCE FLOW — vertical, responsive */
-.gov-section{background:linear-gradient(180deg,#fff,#f6f8fb);border:1px solid var(--rule);margin:20px 0;padding:24px 28px;box-shadow:0 2px 10px rgba(0,43,92,.04)}
-.gov-section h2{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--iqvia-blue);margin-bottom:16px}
-.gov-layout{display:grid;grid-template-columns:1fr 280px;gap:28px;align-items:start}
-@media(max-width:800px){.gov-layout{grid-template-columns:1fr}}
-.vflow{display:flex;flex-direction:column;align-items:stretch;gap:0;max-width:420px}
-.vf-node{display:flex;align-items:center;gap:14px;padding:14px 18px;border:2px solid var(--rule);background:linear-gradient(90deg,#fafbfc,#fff);border-radius:4px;transition:.35s;opacity:.55}
-.vf-node.on{opacity:1;border-color:var(--iqvia-green);background:linear-gradient(90deg,#e6f5ec,#f0fdf4);box-shadow:0 4px 16px rgba(0,166,81,.15)}
-.vf-node.fail{opacity:1;border-color:var(--bad);background:linear-gradient(90deg,#fde8ec,#fff)}
-.vf-node.block-path{opacity:1;border-color:var(--bad);border-style:dashed}
-.vf-ico{width:36px;height:36px;border-radius:4px;background:var(--iqvia-blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
-.vf-node.on .vf-ico{background:var(--iqvia-green)}
-.vf-node.fail .vf-ico,.vf-node.block-path .vf-ico{background:var(--bad)}
-.vf-txt .vf-title{font-weight:700;font-size:14px;color:var(--iqvia-blue)}
-.vf-txt .vf-sub{font-size:12px;color:var(--mute);margin-top:2px}
-.vf-arr{text-align:center;color:#b8c5d4;font-size:18px;line-height:1;padding:4px 0}
-.vf-arr.lit{color:var(--iqvia-green)}
-.vf-block{margin-top:8px;padding:12px 16px;background:var(--bad-bg);border:1px solid var(--bad);border-radius:4px;font-size:13px;font-weight:600;color:var(--bad);display:none}
-.vf-block.show{display:block;animation:pulseRed 1.2s ease 2}
-.gov-side{padding:18px;background:linear-gradient(165deg,#eef2f7,#e8ecf2);border:1px solid #c5d0de;border-radius:4px;font-size:14px;line-height:1.55;color:#475569}
-.gov-side h3{font-size:12px;font-weight:700;text-transform:uppercase;color:var(--iqvia-blue);margin-bottom:10px;letter-spacing:.06em}
-.gov-legend{display:flex;flex-wrap:wrap;gap:16px;margin-top:16px;font-size:13px;color:var(--mute)}
-.gov-legend span{display:flex;align-items:center;gap:8px}
-.gl{width:14px;height:14px;border-radius:2px;flex-shrink:0}
+/* HEADER — matches toolbar aesthetic */
+.topstripe{height:3px;background:linear-gradient(90deg,var(--iqvia-blue),#5a7088 70%,#8fa3b8)}
+.appbar{background:linear-gradient(135deg,#002B5C 0%,#1a3d6b 42%,#4a6278 100%);border:1px solid #1a3d6b;padding:28px 32px;display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between;align-items:flex-start;box-shadow:0 4px 20px rgba(0,43,92,.14),inset 0 1px 0 rgba(255,255,255,.08);border-radius:0 0 8px 8px;margin-bottom:20px}
+.brand-block h1{font-size:22px;font-weight:600;color:#fff;letter-spacing:-.015em}
+.brand-block .tagline{font-size:14px;color:rgba(255,255,255,.82);margin-top:8px;max-width:580px;line-height:1.55}
+.worksample{display:inline-block;margin-top:12px;font-size:10px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;color:rgba(255,255,255,.95);background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.28);padding:5px 14px;border-radius:4px}
 
 /* METRICS STRIP — gradient bars */
-.metrics-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:20px 0}
+.metrics-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:0 0 20px}
 @media(max-width:900px){.metrics-strip{grid-template-columns:1fr 1fr}}
-.metric-card{background:var(--card);border:1px solid var(--rule);padding:18px 20px}
-.metric-card .ml{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--mute);margin-bottom:8px}
-.metric-card .mv{font-size:32px;font-weight:700;font-family:"Source Code Pro",monospace;color:var(--iqvia-blue);margin-bottom:10px}
+.metric-card{background:linear-gradient(165deg,#fff 0%,#f6f8fb 100%);border:1px solid var(--rule);padding:18px 20px;box-shadow:0 1px 4px rgba(0,43,92,.04)}
+.metric-card .ml{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--mute);margin-bottom:8px}
+.metric-card .mv{font-size:28px;font-weight:600;color:var(--iqvia-blue);margin-bottom:10px;font-variant-numeric:tabular-nums}
 .metric-card .mv.ok{color:var(--ok)} .metric-card .mv.warn{color:var(--warn)} .metric-card .mv.bad{color:var(--bad)}
 .grad-bar{height:14px;border-radius:2px;background:#dde4ec;overflow:hidden;position:relative}
 .grad-fill{height:100%;border-radius:2px;transition:width 1s cubic-bezier(.4,0,.2,1);background:linear-gradient(90deg,var(--bad) 0%,var(--warn) 45%,var(--iqvia-green) 100%);background-size:200% 100%;width:0}
 .grad-threshold{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--iqvia-blue);left:80%;opacity:.7}
 .grad-threshold::after{content:'80% gate';position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:700;color:var(--iqvia-blue);white-space:nowrap}
 
-.toolbar{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;background:var(--iqvia-blue);color:#fff;padding:16px 24px;margin-bottom:20px}
-.toolbar .play{background:var(--iqvia-green);border:none;color:#fff;font-family:inherit;font-size:16px;font-weight:700;padding:14px 28px;cursor:pointer;display:inline-flex;align-items:center;gap:10px}
-.toolbar .play:disabled{opacity:.5}
-.toolbar .hint{font-size:15px;color:rgba(255,255,255,.85);max-width:480px;line-height:1.45}
-.toolbar .howto{background:transparent;border:1px solid rgba(255,255,255,.4);color:#fff;font-family:inherit;font-size:14px;font-weight:600;padding:12px 20px;cursor:pointer}
+.toolbar{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;background:linear-gradient(135deg,#002B5C 0%,#1a3d6b 45%,#4a6278 100%);color:#fff;padding:16px 24px;margin-bottom:20px;border:1px solid #1a3d6b;box-shadow:0 4px 20px rgba(0,43,92,.12),inset 0 1px 0 rgba(255,255,255,.08)}
+.toolbar .play{background:linear-gradient(180deg,#00c964,var(--iqvia-green));border:none;color:#fff;font-family:inherit;font-size:16px;font-weight:700;padding:14px 28px;cursor:pointer;display:inline-flex;align-items:center;gap:10px;box-shadow:0 2px 12px rgba(0,166,81,.35);animation:playPulse 2.5s ease-in-out infinite}
+.toolbar .play:disabled{opacity:.55;animation:none}
+@keyframes playPulse{0%,100%{box-shadow:0 2px 12px rgba(0,166,81,.35)}50%{box-shadow:0 4px 24px rgba(0,166,81,.55)}}
+.toolbar .hint{font-size:15px;color:rgba(255,255,255,.92);max-width:480px;line-height:1.5}
+.toolbar .howto{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.35);color:#fff;font-family:inherit;font-size:14px;font-weight:600;padding:12px 20px;cursor:pointer}
 
-.narr{background:var(--iqvia-blue);color:#fff;padding:18px 24px;margin-bottom:20px;display:none;border-left:5px solid var(--iqvia-green)}
+.narr{background:linear-gradient(135deg,#f4f7fa 0%,#fff 55%,#eef2f7 100%);color:var(--ink);padding:16px 22px;margin-bottom:20px;display:none;border:1px solid #c5d0de;border-radius:8px;box-shadow:0 2px 10px rgba(0,43,92,.05)}
 .narr.show{display:block}
-.narr b{color:#fff}
-.narr-tag{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;background:var(--iqvia-green);padding:4px 12px;margin-right:12px}
+.narr b{color:var(--iqvia-blue);font-weight:600}
+.narr-tag{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.04em;background:rgba(0,43,92,.08);color:var(--iqvia-blue);padding:4px 12px;margin-right:12px;border-radius:4px;border:1px solid #c5d0de}
 
 .layout{display:grid;grid-template-columns:340px minmax(0,1.5fr) 380px;gap:20px;align-items:start}
 @media(max-width:1200px){.layout{grid-template-columns:1fr}}
 .panel{background:var(--card);border:1px solid var(--rule);transition:.35s}
 .panel.spot.on{border-color:var(--iqvia-green);transform:translateY(-2px)}
-.panel-head{background:var(--iqvia-blue);color:#fff;padding:14px 20px;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.panel-head{background:linear-gradient(90deg,#002B5C,#1a4470 70%,#2d5678);color:#fff;padding:13px 20px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
 
 /* PROTOCOL VIEWER */
 .cite-bar{display:flex;align-items:center;gap:12px;padding:14px 18px;background:#f4f7fa;border-bottom:1px solid var(--rule);flex-wrap:wrap}
@@ -120,7 +121,7 @@ body.running .spot.on{box-shadow:0 0 0 3px rgba(0,166,81,.45),0 12px 40px rgba(0
 .protocol-doc .sec{margin-bottom:14px}
 .protocol-doc .sec-h{font-weight:700;color:var(--iqvia-blue);font-size:13px;margin-bottom:4px}
 .protocol-doc mark{background:#fff3b0;padding:0 2px;font-weight:600}
-.cite-out{font-size:13px;padding:12px 18px;background:var(--ok-bg);border-top:1px solid var(--ok);color:#1a4d32;font-family:"Source Code Pro",monospace;line-height:1.5;display:none}
+.cite-out{font-size:12px;padding:12px 18px;background:#f4f7fa;border-top:1px solid var(--rule);color:#475569;line-height:1.5;display:none;font-style:italic}
 .cite-out.show{display:block}
 
 .doc-tabs{display:flex;border-bottom:1px solid var(--rule);overflow-x:auto}
@@ -134,20 +135,26 @@ body.running .spot.on{box-shadow:0 0 0 3px rgba(0,166,81,.45),0 12px 40px rgba(0
 .q-btn .ql{font-weight:700;font-size:15px;color:var(--iqvia-blue);margin-bottom:4px;display:flex;align-items:center;gap:8px}
 .q-btn .trap{background:var(--bad);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;letter-spacing:.04em}
 
-.pipeline-steps{margin-bottom:20px}
-.ps{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:20px}
-@media(max-width:800px){.ps{grid-template-columns:1fr}}
-.ps-item{text-align:center;padding:16px 10px;border:2px solid var(--rule);background:#f8fafc;opacity:.35;transition:.4s}
-.ps-item.on{opacity:1;border-color:var(--iqvia-green);background:var(--ok-bg);box-shadow:0 4px 16px rgba(0,166,81,.2)}
-.ps-item.fail{opacity:1;border-color:var(--bad);background:var(--bad-bg)}
+/* LIVE PIPELINE — horizontal chunky steps */
+.live-pipe{margin-bottom:20px;padding:18px;background:linear-gradient(180deg,#f8fafc,#eef2f7);border:1px solid var(--rule);border-radius:6px}
+.live-pipe-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--mute);margin-bottom:14px}
+.ps{display:flex;align-items:stretch;gap:0;flex-wrap:wrap}
+.ps-item{flex:1;min-width:100px;text-align:center;padding:18px 12px;border:2px solid var(--rule);background:linear-gradient(180deg,#fff,#f4f7fa);opacity:.4;transition:.35s;border-radius:4px;position:relative}
+.ps-item:not(:last-child)::after{content:'→';position:absolute;right:-14px;top:50%;transform:translateY(-50%);color:#b8c5d4;font-size:18px;font-weight:700;z-index:1}
+.ps-item.on{opacity:1;border-color:var(--iqvia-green);background:linear-gradient(180deg,#e6f5ec,#f0fdf4);box-shadow:0 4px 16px rgba(0,166,81,.18)}
+.ps-item.fail{opacity:1;border-color:var(--bad);background:linear-gradient(180deg,#fde8ec,#fff5f6)}
+@media(max-width:700px){
+  .ps{flex-direction:column;gap:8px}
+  .ps-item:not(:last-child)::after{content:'↓';right:auto;left:50%;top:auto;bottom:-16px;transform:translateX(-50%)}
+}
 .ps-item .ps-n{font-size:22px;margin-bottom:6px}
-.ps-item .ps-l{font-size:11px;font-weight:700;text-transform:uppercase;color:var(--iqvia-blue)}
+.ps-item .ps-l{font-size:10px;font-weight:600;text-transform:uppercase;color:var(--iqvia-blue);letter-spacing:.03em}
 .ps-item .ps-s{font-size:12px;font-weight:600;color:var(--mute);margin-top:4px;min-height:16px}
 
-.ret-block{margin-bottom:16px;padding:18px;border:1px solid var(--rule);border-left:4px solid var(--iqvia-blue);background:#fff;display:none}
+.ret-block{margin-bottom:16px;padding:18px;border:1px solid var(--rule);background:linear-gradient(135deg,#fff,#f8fafc);border-radius:6px;display:none}
 .ret-block.show{display:block}
-.ret-block .rh{font-size:12px;font-weight:700;color:var(--mute);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
-.ret-score{font-family:"Source Code Pro",monospace;font-weight:600;color:var(--iqvia-blue)}
+.ret-block .rh{font-size:12px;font-weight:600;color:var(--mute);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.ret-score{font-weight:600;color:var(--iqvia-blue);font-variant-numeric:tabular-nums}
 
 .answer-panel{padding:20px;border:1px solid var(--rule);background:#fafbfc;margin-bottom:16px}
 .answer-panel .ah{font-size:12px;font-weight:700;text-transform:uppercase;color:var(--mute);margin-bottom:10px}
@@ -156,13 +163,13 @@ body.running .spot.on{box-shadow:0 0 0 3px rgba(0,166,81,.45),0 12px 40px rgba(0
 
 .claim{margin:10px 0;padding:16px;border:1px solid var(--rule);display:flex;gap:14px;align-items:flex-start;opacity:0;transform:translateY(8px);transition:.4s}
 .claim.vis{opacity:1;transform:none}
-.claim.ok{background:var(--ok-bg);border-left:4px solid var(--iqvia-green)}
-.claim.bad{background:var(--bad-bg);border-left:4px solid var(--bad);animation:shake .4s ease}
+.claim.ok{background:var(--ok-bg);border-color:#a8d8bc}
+.claim.bad{background:var(--bad-bg);border-color:#e8a0ab;animation:shake .4s ease}
 .claim-st{font-size:11px;font-weight:700;text-transform:uppercase;padding:4px 10px;border-radius:2px;flex-shrink:0}
 .claim.ok .claim-st{background:var(--iqvia-green);color:#fff}
 .claim.bad .claim-st{background:var(--bad);color:#fff}
 .claim-body{font-size:15px;flex:1}
-.claim-cite{font-size:12px;font-family:"Source Code Pro",monospace;color:var(--mute);margin-top:6px}
+.claim-cite{font-size:12px;color:var(--mute);margin-top:6px;font-style:italic}
 
 .gate-panel{padding:20px;background:var(--bad-bg);border:2px solid var(--bad);margin-bottom:16px;display:none}
 .gate-panel.show{display:block;animation:pulseRed 1.5s ease 2}
@@ -172,7 +179,7 @@ body.running .spot.on{box-shadow:0 0 0 3px rgba(0,166,81,.45),0 12px 40px rgba(0
 .json-wrap{border:1px solid #1a2b3c;margin-bottom:16px;display:none}
 .json-wrap.show{display:block}
 .json-head{background:#1a2b3c;color:#fff;padding:12px 18px;font-size:13px;font-weight:600;display:flex;justify-content:space-between}
-.json-body{font-family:"Source Code Pro",monospace;font-size:14px;line-height:1.65;padding:20px;background:#0d1520;color:#e8edf4;max-height:240px;overflow:auto;white-space:pre-wrap}
+.json-body{font-family:ui-monospace,"Cascadia Code","Consolas",monospace;font-size:13px;line-height:1.65;padding:20px;background:#1a2332;color:#e2e8f0;max-height:240px;overflow:auto;white-space:pre-wrap}
 .jk{color:#79c0ff}.js{color:#a5d6ff}.jn{color:#ffa657}.jb{color:#ff7b72}.jl{color:#8b949e}
 
 .actions{display:flex;flex-wrap:wrap;gap:10px}
@@ -208,8 +215,8 @@ body.running .spot.on{box-shadow:0 0 0 3px rgba(0,166,81,.45),0 12px 40px rgba(0
 .perm-badge.auto{background:var(--iqvia-green)}.perm-badge.ask{background:var(--warn)}.perm-badge.never{background:var(--bad)}
 .perm-table tr.lit{background:var(--ok-bg);outline:2px solid var(--iqvia-green)}
 
-.audit{font-family:"Source Code Pro",monospace;font-size:12px;background:#0d1520;color:#8b949e;padding:16px;max-height:180px;overflow-y:auto;line-height:1.7;border:1px solid #1a2b3c}
-.audit .ok{color:#3fb950}.audit .bad{color:#f85149}.audit .warn{color:#d29922}
+.audit{font-size:12px;background:#f4f7fa;color:#475569;padding:16px;max-height:180px;overflow-y:auto;line-height:1.65;border:1px solid var(--rule);border-radius:6px}
+.audit .ok{color:var(--ok);font-weight:500}.audit .bad{color:var(--bad);font-weight:500}.audit .warn{color:var(--warn);font-weight:500}
 
 .disclaimer{font-size:14px;color:var(--mute);padding:18px;border:1px solid var(--rule);background:var(--card);margin-top:24px;line-height:1.55}
 footer{text-align:center;margin-top:24px;font-size:14px;color:var(--mute)}
@@ -218,38 +225,93 @@ footer a{color:var(--iqvia-blue)}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
 @keyframes pulseRed{0%,100%{box-shadow:0 0 0 0 rgba(196,30,58,0)}50%{box-shadow:0 0 0 8px rgba(196,30,58,.15)}}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.6}}
-body.dim .panel:not(.spot.on),body.dim .gov-section{opacity:.45}
+body.dim .panel:not(.spot.on){opacity:.45}
 </style>
 </head>
 <body>
 
 <div class="intro-ov" id="introOv">
   <div class="intro">
-    <button class="skip" id="introSkip" title="Close">&times;</button>
-    <div class="intro-progress"><span class="on"></span><span></span><span></span></div>
+    <div class="intro-banner">
+      <button class="skip" id="introSkip" title="Close">&times;</button>
+      <div class="intro-progress"><span class="on"></span><span></span><span></span><span></span><span></span></div>
+      <p class="intro-kicker" id="introKicker">Work sample · Applied AI Science</p>
+      <h2 id="introTitle">Clinical RAG Evaluation Console</h2>
+    </div>
+    <div class="intro-body">
     <div id="introSlides">
-      <div class="intro-slide" data-i="1">
-        <div class="intro-kicker">Work sample · Applied AI Science</div>
-        <h2>Clinical RAG Evaluation Console</h2>
-        <p class="intro-lead">Retrieve from a protocol corpus → generate an answer → <strong>validate every claim</strong> against source → eval gate blocks failures. Fictional trial data.</p>
-        <div class="intro-flow" id="introFlow">
-          <span class="if-step on">Retrieve</span><span class="if-step">Ground check</span><span class="if-step">Eval gate</span><span class="if-step">Audit log</span>
+      <div class="intro-slide" data-i="1" data-kicker="Work sample · Applied AI Science" data-title="Clinical RAG Evaluation Console">
+        <p class="intro-lead">Interactive demo: retrieve from a protocol corpus → generate an answer → <strong>validate every claim</strong> against source → eval gate blocks failures. All data is fictional.</p>
+      </div>
+      <div class="intro-slide" data-i="2" style="display:none" data-kicker="Architecture" data-title="Evaluation &amp; validation pipeline">
+        <p class="intro-lead">Outputs are <strong>hypotheses to validate</strong> — not results to trust. The harness cross-checks each claim before release.</p>
+        <div class="intro-arch">
+          <div class="arch-timeline">
+            <div class="arch-step">
+              <div class="arch-step-rail"><span class="arch-num">1</span></div>
+              <div class="arch-step-body"><div class="arch-step-title">Clinical query</div><div class="arch-step-desc">Question against protocol corpus, Investigator's Brochure, or pharmacovigilance SOP</div></div>
+            </div>
+            <div class="arch-step">
+              <div class="arch-step-rail"><span class="arch-num">2</span></div>
+              <div class="arch-step-body"><div class="arch-step-title">RAG retrieve</div><div class="arch-step-desc">Vector search over indexed sections · hit@k scoring</div></div>
+            </div>
+            <div class="arch-step">
+              <div class="arch-step-rail"><span class="arch-num">3</span></div>
+              <div class="arch-step-body"><div class="arch-step-title">LLM draft + structured JSON</div><div class="arch-step-desc">Agent output validated against Pydantic schema (dose, flags, confidence)</div></div>
+            </div>
+            <div class="arch-step">
+              <div class="arch-step-rail"><span class="arch-num">4</span></div>
+              <div class="arch-step-body"><div class="arch-step-title">Grounding engine</div><div class="arch-step-desc">Each claim cross-checked against retrieved source · supported / unsupported</div></div>
+            </div>
+            <div class="arch-step trap">
+              <div class="arch-step-rail"><span class="arch-num">5</span></div>
+              <div class="arch-step-body"><div class="arch-step-title">Evaluation gate</div><div class="arch-step-desc">≥80% groundedness required · hallucinations blocked fail-closed</div></div>
+            </div>
+            <div class="arch-step">
+              <div class="arch-step-rail"><span class="arch-num">6</span></div>
+              <div class="arch-step-body"><div class="arch-step-title">Audit log</div><div class="arch-step-desc">Append-only trace · query, claims, gate decision, exportable</div></div>
+            </div>
+          </div>
+        </div>
+        <p class="info-box"><strong>Q2 eval trap:</strong> model cites 12.4% TEAE correctly, then fabricates 18.7% hospitalization — gate blocks automatically.</p>
+      </div>
+      <div class="intro-slide" data-i="3" style="display:none" data-kicker="Core principle" data-title="Hypotheses to validate">
+        <p class="intro-quote">I treat AI outputs as hypotheses to validate — not results to trust.</p>
+        <p class="intro-lead">The model proposes. The evaluation harness cross-checks against source data, catches failure modes, and gates release. Built for Applied AI Science: Python agentic services + eval frameworks + structured output.</p>
+      </div>
+      <div class="intro-slide" data-i="4" style="display:none" data-kicker="During Play scenario" data-title="What to pay attention to">
+        <p class="intro-lead">Several panels update at once. Focus on these — in this order:</p>
+        <div class="watch-list">
+          <div class="watch-item">
+            <span class="watch-n">1</span>
+            <div><strong>Metrics strip</strong><span class="desc">Top of page — groundedness bar drops to 50% on Q2. Hallucinations caught = 1.</span></div>
+          </div>
+          <div class="watch-item">
+            <span class="watch-n">2</span>
+            <div><strong>Live pipeline</strong><span class="desc">Centre panel — five steps light up. Step Ground turns red on unsupported claims.</span></div>
+          </div>
+          <div class="watch-item trap">
+            <span class="watch-n">3</span>
+            <div><strong>Claim cards + BLOCKED gate</strong><span class="desc">Q2: "18.7% hospitalization" marked UNSUPPORTED. Red gate panel appears.</span></div>
+          </div>
+          <div class="watch-item">
+            <span class="watch-n">4</span>
+            <div><strong>Validation charts</strong><span class="desc">Right panel — supported vs unsupported split. Golden tests fill pending → pass.</span></div>
+          </div>
         </div>
       </div>
-      <div class="intro-slide" data-i="2" style="display:none">
-        <div class="intro-kicker">Core principle</div>
-        <p class="intro-quote">I treat AI outputs as hypotheses to validate — not results to trust.</p>
-        <p class="intro-lead">The model proposes. The evaluation harness cross-checks against source data, catches failure modes, and gates release. This matches the Applied AI Science role: Python agentic services + eval frameworks.</p>
+      <div class="intro-slide" data-i="5" style="display:none" data-kicker="You're ready" data-title="Enter the console">
+        <div class="intro-ready">
+          <p class="intro-lead">Close this window and click <strong>Play the scenario</strong> in the toolbar — full walkthrough in ~35 seconds.</p>
+          <p class="intro-lead" style="margin-top:12px">Or pick <strong>Q2 — EVAL TRAP</strong> manually for the key moment.</p>
+        </div>
       </div>
-      <div class="intro-slide" data-i="3" style="display:none">
-        <div class="intro-kicker">How to explore</div>
-        <p class="intro-lead"><strong>1.</strong> Click <strong>Play the scenario</strong> (toolbar below).<br><strong>2.</strong> Watch question <strong>#2 — EVAL TRAP</strong>: model invents 18.7% hospitalization (not in source).<br><strong>3.</strong> Switch citation format (Vancouver / AMA / APA).<br><strong>4.</strong> Run golden tests — pending → running → pass.</p>
-      </div>
+    </div>
     </div>
     <div class="intro-nav">
       <button class="btn-back-intro" id="introBack" style="display:none">← Back</button>
       <button class="btn-enter" id="introNext">Continue →</button>
-      <div class="intro-dots"><i class="on"></i><i></i><i></i></div>
+      <div class="intro-dots"><i class="on"></i><i></i><i></i><i></i><i></i></div>
     </div>
   </div>
 </div>
@@ -265,38 +327,6 @@ body.dim .panel:not(.spot.on),body.dim .gov-section{opacity:.45}
   </div>
 </header>
 
-<!-- GOVERNANCE ARCHITECTURE DIAGRAM -->
-<section class="gov-section spot" id="spot-gov">
-  <h2>Evaluation &amp; validation architecture</h2>
-  <div class="gov-layout">
-    <div class="vflow" id="vflow">
-      <div class="vf-node" data-v="query"><span class="vf-ico">Q</span><div class="vf-txt"><div class="vf-title">Clinical query</div><div class="vf-sub" id="vf-query"></div></div></div>
-      <div class="vf-arr">↓</div>
-      <div class="vf-node" data-v="retrieve"><span class="vf-ico">R</span><div class="vf-txt"><div class="vf-title">RAG retrieve</div><div class="vf-sub" id="vf-retrieve"></div></div></div>
-      <div class="vf-arr">↓</div>
-      <div class="vf-node" data-v="generate"><span class="vf-ico">G</span><div class="vf-txt"><div class="vf-title">LLM draft + structured JSON</div><div class="vf-sub" id="vf-generate"></div></div></div>
-      <div class="vf-arr">↓</div>
-      <div class="vf-node" data-v="ground"><span class="vf-ico">✓</span><div class="vf-txt"><div class="vf-title">Grounding engine</div><div class="vf-sub" id="vf-ground">Cross-check each claim vs source</div></div></div>
-      <div class="vf-arr">↓</div>
-      <div class="vf-node" data-v="gate"><span class="vf-ico">⊘</span><div class="vf-txt"><div class="vf-title">Evaluation gate</div><div class="vf-sub" id="vf-gate">≥80% groundedness · failure modes</div></div></div>
-      <div class="vf-arr">↓</div>
-      <div class="vf-node" data-v="audit"><span class="vf-ico">≡</span><div class="vf-txt"><div class="vf-title">Audit log</div><div class="vf-sub" id="vf-audit">Append-only trace</div></div></div>
-      <div class="vf-block" id="vf-block">BLOCK — unsupported claim / hallucination detected · fail-closed</div>
-    </div>
-    <div class="gov-side">
-      <h3>What this demonstrates</h3>
-      <p><strong style="color:var(--iqvia-blue)">Eval-first AI</strong> — outputs are hypotheses. Retrieval quality, claim grounding, and golden regression tests gate release.</p>
-      <p style="margin-top:10px"><strong style="color:var(--bad)">Q2 eval trap</strong> — model cites 12.4% TEAE correctly, then fabricates 18.7% hospitalization. Gate blocks automatically.</p>
-      <p style="margin-top:10px">Palette: IQVIA blue <code style="font-size:12px">#002B5C</code> + green <code style="font-size:12px">#00A651</code> (Apollo-inspired). Fictional data.</p>
-    </div>
-  </div>
-  <div class="gov-legend">
-    <span><span class="gl" style="background:#002B5C"></span> Pipeline stage</span>
-    <span><span class="gl" style="background:#00A651"></span> Active / pass</span>
-    <span><span class="gl" style="background:#c41e3a"></span> Blocked</span>
-  </div>
-</section>
-
 <!-- LIVE METRICS STRIP -->
 <div class="metrics-strip">
   <div class="metric-card"><div class="ml">Retrieval hit@3</div><div class="mv" id="stat-hit">—</div><div class="grad-bar"><div class="grad-fill" id="bar-hit"></div></div></div>
@@ -305,7 +335,7 @@ body.dim .panel:not(.spot.on),body.dim .gov-section{opacity:.45}
   <div class="metric-card"><div class="ml">Golden tests</div><div class="mv" id="stat-gold">0/5</div><div class="grad-bar"><div class="grad-fill" id="bar-gold"></div></div></div>
 </div>
 
-<div class="callout"><strong>Start here:</strong> Click <strong>Play the scenario</strong> in the toolbar — the vertical pipeline (left), metrics bars (top), and panels will light up step by step. Or pick <strong>question #2 (EVAL TRAP)</strong> manually.</div>
+<div class="callout"><strong>Start here:</strong> Click <strong>Play the scenario</strong> — the live pipeline (centre panel), metrics bars, and validation charts light up step by step. Or pick <strong>question #2 (EVAL TRAP)</strong> manually.</div>
 
 <div class="toolbar">
   <button class="play" id="btn-play">▶ Play the scenario</button>
@@ -338,12 +368,15 @@ body.dim .panel:not(.spot.on),body.dim .gov-section{opacity:.45}
   <main class="panel spot" id="spot-main">
     <div class="panel-head">RAG pipeline · structured output</div>
     <div style="padding:20px">
-      <div class="ps" id="ps">
-        <div class="ps-item" data-p="retrieve"><div class="ps-n">①</div><div class="ps-l">Retrieve</div><div class="ps-s" id="ps-retrieve"></div></div>
-        <div class="ps-item" data-p="generate"><div class="ps-n">②</div><div class="ps-l">Generate</div><div class="ps-s" id="ps-generate"></div></div>
-        <div class="ps-item" data-p="ground"><div class="ps-n">③</div><div class="ps-l">Ground</div><div class="ps-s" id="ps-ground"></div></div>
-        <div class="ps-item" data-p="policy"><div class="ps-n">④</div><div class="ps-l">Eval gate</div><div class="ps-s" id="ps-policy"></div></div>
-        <div class="ps-item" data-p="audit"><div class="ps-n">⑤</div><div class="ps-l">Audit</div><div class="ps-s" id="ps-audit"></div></div>
+      <div class="live-pipe">
+        <div class="live-pipe-label">Live evaluation pipeline</div>
+        <div class="ps" id="ps">
+          <div class="ps-item" data-p="retrieve"><div class="ps-n">①</div><div class="ps-l">Retrieve</div><div class="ps-s" id="ps-retrieve"></div></div>
+          <div class="ps-item" data-p="generate"><div class="ps-n">②</div><div class="ps-l">Generate</div><div class="ps-s" id="ps-generate"></div></div>
+          <div class="ps-item" data-p="ground"><div class="ps-n">③</div><div class="ps-l">Ground</div><div class="ps-s" id="ps-ground"></div></div>
+          <div class="ps-item" data-p="policy"><div class="ps-n">④</div><div class="ps-l">Eval gate</div><div class="ps-s" id="ps-policy"></div></div>
+          <div class="ps-item" data-p="audit"><div class="ps-n">⑤</div><div class="ps-l">Audit</div><div class="ps-s" id="ps-audit"></div></div>
+        </div>
       </div>
       <div class="ret-block" id="ret-block"></div>
       <div class="answer-panel">
@@ -456,20 +489,13 @@ GOLD.forEach(g => goldResults[g.id]='pending');
 
 function clearMetricTimers(){ metricTimers.forEach(clearInterval); metricTimers=[]; }
 
-function setVflow(stage, fail=false, block=false) {
-  document.querySelectorAll('.vf-node').forEach(n => {
-    n.classList.remove('on','fail','block-path');
-    if (n.dataset.v === stage) n.classList.add(fail ? 'fail' : 'on');
-  });
-  document.querySelectorAll('.vf-arr').forEach(a => a.classList.toggle('lit', !!stage));
-  $('vf-block').classList.toggle('show', block);
-}
-
-function resetVflow() {
-  document.querySelectorAll('.vf-node').forEach(n => n.classList.remove('on','fail','block-path'));
-  document.querySelectorAll('.vf-arr').forEach(a => a.classList.remove('lit'));
-  ['query','retrieve','generate','ground','gate','audit'].forEach(k => { const e=$('vf-'+k); if(e && k!=='ground' && k!=='gate') e.textContent=''; });
-  $('vf-block').classList.remove('show');
+function resetPs() {
+  document.querySelectorAll('.ps-item').forEach(p => p.classList.remove('on','fail'));
+  ['retrieve','generate','ground','policy','audit'].forEach(k => { const e=$('ps-'+k); if(e) e.textContent=''; });
+  document.querySelectorAll('.perm-table tr').forEach(r => r.classList.remove('lit'));
+  document.querySelectorAll('.spark-col').forEach(col => { col.style.height='8%'; col.classList.remove('lit'); col.style.background=''; });
+  $('g-seg-ok').style.width='0'; $('g-seg-fail').style.width='0';
+  $('g-lbl-ok').textContent='— supported'; $('g-lbl-fail').textContent='— unsupported';
 }
 
 function formatCitation(doc, secId) {
@@ -562,10 +588,10 @@ function animateMetrics(ans, gradual=false) {
 function setPs(name, on, fail=false) {
   document.querySelectorAll('.ps-item').forEach(p => {
     p.classList.remove('on','fail');
-    if (p.dataset.p === name) p.classList.add(on ? (fail ? 'fail' : 'on') : '');
+    if (p.dataset.p === name && on) p.classList.add(fail ? 'fail' : 'on');
   });
   const el = $('ps-'+name);
-  if (el && on) el.textContent = fail ? 'BLOCKED' : el.textContent || 'active';
+  if (el && on) el.textContent = fail ? 'BLOCKED' : (el.textContent || 'active');
 }
 
 function syntaxHighlight(obj) {
@@ -588,8 +614,6 @@ function spotlight(...ids) { document.body.classList.add('dim'); document.queryS
 function clearSpot() { document.body.classList.remove('dim'); document.querySelectorAll('.spot').forEach(e=>e.classList.remove('on')); }
 function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
 
-function highlightSvg() { /* replaced by setVflow */ }
-
 async function runQuery(qid, fromTour=false) {
   if (tourRunning && !fromTour) return;
   const q = QUESTIONS.find(x=>x.id===qid), ans = ANSWERS[qid], doc = DOCS.find(d=>d.id===q.docId);
@@ -608,31 +632,26 @@ async function runQuery(qid, fromTour=false) {
   if(fromTour) narr('Scene', ans.narr);
   log('Query: '+q.text);
 
-  spotlight('spot-gov','spot-left');
-  setVflow('query'); setPs('retrieve', true);
-  $('vf-query').textContent = 'received';
+  spotlight('spot-left');
+  setPs('retrieve', true);
   await sleep(550);
 
   const sec = doc.sections.find(s=>s.id===q.sec);
   $('ret-block').innerHTML = `<div class="rh"><span>Retrieval hit@1 · ${doc.title} §${q.sec}</span><span class="ret-score">cosine 0.92</span></div><div>${sec ? sec.body : ''}</div>`;
   $('ret-block').classList.add('show');
-  setVflow('retrieve'); setPs('retrieve', true);
   $('ps-retrieve').textContent = 'hit@1 · 0.92';
-  $('vf-retrieve').textContent = 'hit@1 · 0.92';
   await sleep(500);
 
-  setPs('retrieve', false); setPs('generate', true);
-  setVflow('generate');
+  setPs('retrieve', false);
+  setPs('generate', true);
   $('ps-generate').textContent = 'drafting…';
-  $('vf-generate').textContent = 'LLM drafting…';
   await sleep(550);
   $('answer-text').textContent = ans.text;
   $('answer-text').style.color='var(--ink)';
   $('ps-generate').textContent = 'done';
-  $('vf-generate').textContent = 'draft complete';
 
-  setPs('generate', false); setPs('ground', true);
-  setVflow('ground');
+  setPs('generate', false);
+  setPs('ground', true);
   spotlight('spot-main');
 
   for (let i = 0; i < ans.claims.length; i++) {
@@ -647,9 +666,7 @@ async function runQuery(qid, fromTour=false) {
     setTimeout(()=>div.classList.add('vis'),20);
     if (!c.ok) {
       setPs('ground', true, true);
-      setVflow('ground', true, true);
       $('ps-ground').textContent = 'FAIL';
-      $('vf-ground').textContent = 'unsupported claim detected';
       log('BLOCKED claim: '+c.t, 'bad');
     }
     animateMetrics({...ans, groundPct: c.ok ? Math.round(((i+1)/ans.claims.length)*100) : ans.groundPct, claims: ans.claims.slice(0,i+1)}, true);
@@ -662,22 +679,20 @@ async function runQuery(qid, fromTour=false) {
     });
   }
   $('ps-ground').textContent = ans.groundPct + '%';
-  $('vf-ground').textContent = ans.groundPct + '% grounded';
   await sleep(350);
 
-  setPs('ground', false); setPs('policy', true);
-  setVflow('gate', ans.block, ans.block);
+  setPs('ground', false);
+  setPs('policy', true);
   const askRow = document.querySelector('.perm-table tr[data-p="ask"]');
   if (askRow) askRow.classList.add('lit');
   $('ps-policy').textContent = 'checking…';
-  $('vf-gate').textContent = 'checking threshold…';
   await sleep(450);
 
   $('json-out').innerHTML = syntaxHighlight(ans.json);
   $('json-conf').textContent = 'confidence: ' + (ans.json.confidence*100).toFixed(0) + '%';
   $('json-wrap').classList.add('show');
   animateMetrics(ans, true);
-  spotlight('spot-right','spot-gov');
+  spotlight('spot-right');
 
   if (ans.block) {
     setPs('policy', true, true);
@@ -685,19 +700,16 @@ async function runQuery(qid, fromTour=false) {
     $('gate-title').textContent = ans.caught ? 'Evaluation gate: BLOCKED — hallucination detected' : 'Evaluation gate: BLOCKED — review required';
     $('gate-reason').textContent = ans.reason;
     $('ps-policy').textContent = 'BLOCKED';
-    $('vf-gate').textContent = 'BLOCKED';
     log('GATE BLOCKED: '+ans.reason.substring(0,80), 'bad');
   } else {
     setPs('policy', true, false);
     $('ps-policy').textContent = 'PASS';
-    $('vf-gate').textContent = 'PASS · queued for review';
     log('All claims grounded — passed eval gate', 'ok');
   }
 
-  setPs('policy', false); setPs('audit', true);
-  setVflow('audit');
+  setPs('policy', false);
+  setPs('audit', true);
   $('ps-audit').textContent = 'logged';
-  $('vf-audit').textContent = 'event recorded';
   await sleep(250);
   if(!fromTour) clearSpot();
 }
@@ -734,18 +746,25 @@ async function playScenario() {
   const btn = $('btn-play');
   btn.disabled = true;
   btn.textContent = '▶ Running…';
+  document.body.classList.add('running');
+  $('introOv').classList.add('hide');
+  resetPs();
+  clearMetricTimers();
+  $('audit').innerHTML = '<span class="ev">[init]</span> Scenario walkthrough started';
+  $('btn-play').scrollIntoView({ behavior:'smooth', block:'center' });
   try {
     narr('Welcome', 'Walkthrough starting. <b>Q2</b> = eval trap: 18.7% hospitalization is fabricated.');
     await runQuery('q1', true); await sleep(2200);
     await runQuery('q2', true); await sleep(2600);
     await runQuery('q3', true); await sleep(1800);
     await runGoldenSuite(); await sleep(1000);
-    narr('Complete', 'Try <b>Q2</b> manually — watch vertical pipeline + metrics drop to <b>50%</b>.');
+    narr('Complete', 'Try <b>Q2</b> manually — watch the live pipeline + metrics drop to <b>50%</b>.');
   } catch (err) {
     console.error(err);
     log('Scenario error — reload page if stuck', 'bad');
   } finally {
     tourRunning = false;
+    document.body.classList.remove('running');
     btn.disabled = false;
     btn.textContent = '▶ Play the scenario';
     clearSpot();
@@ -756,17 +775,21 @@ async function playScenario() {
 // Intro
 function showIntro(n) {
   introStep = n;
+  const slide = document.querySelector(`.intro-slide[data-i="${n}"]`);
+  if (slide) {
+    $('introKicker').textContent = slide.dataset.kicker || '';
+    $('introTitle').textContent = slide.dataset.title || '';
+  }
   document.querySelectorAll('.intro-slide').forEach(s => s.style.display = s.dataset.i==String(n) ? 'block' : 'none');
   document.querySelectorAll('.intro-dots i').forEach((d,i) => d.classList.toggle('on', i < n));
   document.querySelectorAll('.intro-progress span').forEach((s,i) => s.classList.toggle('on', i < n));
   $('introBack').style.display = n > 1 ? 'inline-block' : 'none';
-  $('introNext').textContent = n < 3 ? 'Continue →' : 'Enter console →';
-  if (n === 1) {
-    document.querySelectorAll('#introFlow .if-step').forEach(s => s.classList.remove('on'));
-    document.querySelectorAll('#introFlow .if-step').forEach((s,i) => setTimeout(() => s.classList.add('on'), i*300));
-  }
+  $('introNext').textContent = n < 5 ? 'Continue →' : 'Enter console →';
 }
-$('introNext').onclick = () => introStep < 3 ? showIntro(introStep+1) : $('introOv').classList.add('hide');
+$('introNext').onclick = () => {
+  if (introStep < 5) showIntro(introStep+1);
+  else { $('introOv').classList.add('hide'); setTimeout(()=>$('btn-play').scrollIntoView({behavior:'smooth',block:'center'}), 300); }
+};
 $('introBack').onclick = () => showIntro(introStep-1);
 $('introSkip').onclick = () => $('introOv').classList.add('hide');
 CITE_FMT.onchange = () => { const q = QUESTIONS.find(x=>document.querySelector('.q-btn.on')?.dataset.q===x.id); if(q) updateCite(q.sec); };
@@ -774,7 +797,7 @@ CITE_FMT.onchange = () => { const q = QUESTIONS.find(x=>document.querySelector('
 $('btn-play').onclick = playScenario;
 $('btn-run-gold').onclick = runGoldenSuite;
 $('btn-copy-audit').onclick = () => { navigator.clipboard.writeText($('audit').innerText); log('Audit copied','ok'); };
-$('btn-howto').onclick = () => { showIntro(3); $('introOv').classList.remove('hide'); };
+$('btn-howto').onclick = () => { showIntro(4); $('introOv').classList.remove('hide'); };
 
 renderTabs(); renderProtocol('p1'); renderQuestions(); renderGoldList();
 showIntro(1);
