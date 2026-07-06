@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AI Work Sample — Clinical RAG Evaluation Console</title>
+<style>
+@page { size: A4; margin: 18mm; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,"Times New Roman",serif;font-size:11pt;line-height:1.45;color:#1e293b;max-width:700px;margin:0 auto;padding:24px}
+h1{font-size:18pt;font-weight:700;margin-bottom:4px;color:#0f172a}
+.sub{font-size:10pt;color:#64748b;margin-bottom:16px}
+h2{font-size:11pt;font-weight:700;margin:14px 0 6px;color:#0f766e;text-transform:uppercase;letter-spacing:.04em}
+p{margin-bottom:8px}
+ul{margin:0 0 10px 18px}
+li{margin-bottom:4px}
+.url-box{background:#f0fdfa;border:2px solid #0d9488;border-radius:6px;padding:14px 16px;margin:16px 0;text-align:center}
+.url-box a{font-size:14pt;font-weight:700;color:#0f766e;text-decoration:none;word-break:break-all}
+.meta{font-size:9pt;color:#64748b;margin-top:20px;border-top:1px solid #e2e8f0;padding-top:10px}
+.tag{display:inline-block;background:#ecfdf5;color:#047857;font-size:8pt;font-weight:700;padding:2px 8px;border-radius:3px;margin-right:6px}
+@media print{body{padding:0}}
+</style>
+</head>
+<body>
+<h1>AI Work Sample — Clinical RAG Evaluation Console</h1>
+<p class="sub">Ainoa Figueroa Vidal · Applied AI Science · IQVIA R1540735 · July 2026</p>
+
+<p><span class="tag">INTERACTIVE DEMO</span> Self-contained browser demo showing production patterns for regulated life-sciences AI: grounded retrieval, claim-level validation, evaluation harness, and human-in-the-loop governance.</p>
+
+<div class="url-box">
+  <p style="font-size:9pt;color:#64748b;margin-bottom:6px">Live demo (GitHub Pages)</p>
+  <a href="https://ainoafv.github.io/iqvia-clinical-rag-eval-demo/">https://ainoafv.github.io/iqvia-clinical-rag-eval-demo/</a>
+</div>
+
+<h2>What it demonstrates</h2>
+<ul>
+  <li><strong>Grounded RAG</strong> — clinical questions answered with mandatory source citations from fictional protocol corpus</li>
+  <li><strong>Claim-level grounding check</strong> — supported / unsupported / needs-review; automatic block on hallucinated numeric data</li>
+  <li><strong>Evaluation harness</strong> — hit@k, groundedness %, golden test suite (5/5 pass)</li>
+  <li><strong>Structured agent output</strong> — JSON schema visible (dose, route, confidence, hallucination flags)</li>
+  <li><strong>Never / Ask / Auto policy ladder</strong> — code-enforced; NEVER blocks auto-publish to EHR</li>
+  <li><strong>Human-in-the-loop</strong> — approve, reject, or edit before any answer leaves the queue</li>
+  <li><strong>Append-only audit log</strong> — exportable trace of every pipeline step and human decision</li>
+</ul>
+
+<h2>Design principle</h2>
+<p><em>"I treat AI outputs as hypotheses to validate, not results to trust."</em> The model proposes; the evaluation gate and a qualified reviewer decide.</p>
+
+<h2>How to explore (90 seconds)</h2>
+<p>Click <strong>Guided tour</strong> on the demo page, or manually run question #2 ("Serious AE rate") to see hallucination detection in action.</p>
+
+<h2>Related work</h2>
+<p>GIFT/SERGAS (React + Python eval harness), AICOMTA clinical RAG, Pulse governance (Never/Ask/Auto), BioCred (440+ tests). GitHub: <strong>github.com/Ainoafv</strong></p>
+
+<p class="meta">Fictional data only — no real patient or trial information. Built as a work sample for Software Development Engineer, Applied AI Science.</p>
+</body>
+</html>

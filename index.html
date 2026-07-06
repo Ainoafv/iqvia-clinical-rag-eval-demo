@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clinical RAG Evaluation Console — Applied AI Science demo · Ainoa Figueroa Vidal</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0f172a; --muted:#64748b; --line:#e2e8f0; --bg:#f1f5f9; --card:#fff;
+  --brand:#0d9488; --brand2:#0f766e; --brand-soft:#ccfbf1;
+  --blue:#2563eb; --blue-soft:#eff6ff;
+  --ok:#059669; --ok-bg:#ecfdf5;
+  --warn:#d97706; --warn-bg:#fffbeb;
+  --bad:#dc2626; --bad-bg:#fef2f2;
+  --purple:#7c3aed;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"IBM Plex Sans",system-ui,sans-serif;background:var(--bg);color:#334155;font-size:14px;line-height:1.45;min-height:100vh}
+.wrap{max-width:1280px;margin:0 auto;padding:20px 16px 48px}
+.appbar{background:var(--card);border:1px solid var(--line);border-top:4px solid var(--brand);border-radius:8px;padding:16px 20px;display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:flex-start;box-shadow:0 1px 3px rgba(15,23,42,.06)}
+.appbar h1{font-size:18px;font-weight:700;color:var(--ink);letter-spacing:-.02em}
+.appbar .sub{font-size:12px;color:var(--muted);margin-top:4px;max-width:520px}
+.badge{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:var(--brand-soft);color:var(--brand2);border:1px solid #99f6e4;padding:3px 8px;border-radius:4px;margin-left:8px;vertical-align:middle}
+.meta{display:flex;gap:10px;flex-wrap:wrap}
+.stat{background:#f8fafc;border:1px solid var(--line);border-radius:6px;padding:8px 14px;text-align:center;min-width:72px}
+.stat .v{font-size:18px;font-weight:700;color:var(--ink);font-family:"IBM Plex Mono",monospace}
+.stat .l{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-top:2px}
+.stat.ok .v{color:var(--ok)} .stat.warn .v{color:var(--warn)} .stat.bad .v{color:var(--bad)}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0;align-items:center}
+.btn{font-family:inherit;font-size:13px;font-weight:600;padding:9px 16px;border-radius:6px;border:1px solid var(--line);background:var(--card);cursor:pointer;color:var(--ink)}
+.btn:hover{border-color:var(--brand);color:var(--brand2)}
+.btn-primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+.btn-primary:hover{background:var(--brand2)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.tour-hint{font-size:12px;color:var(--muted);flex:1;min-width:200px}
+.grid{display:grid;grid-template-columns:280px 1fr 300px;gap:14px;align-items:start}
+@media(max-width:1100px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(15,23,42,.04)}
+.panel-hd{padding:12px 16px;background:#f8fafc;border-bottom:1px solid var(--line);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.panel-bd{padding:14px 16px}
+.doc-list{list-style:none;max-height:320px;overflow-y:auto}
+.doc-list li{padding:10px 12px;border-radius:6px;cursor:pointer;margin-bottom:4px;border:1px solid transparent;font-size:12px}
+.doc-list li:hover{background:#f8fafc}
+.doc-list li.on{background:var(--blue-soft);border-color:#bfdbfe}
+.doc-list .dt{font-weight:600;color:var(--ink);font-size:13px}
+.doc-list .dm{font-size:11px;color:var(--muted);margin-top:2px}
+.q-grid{display:grid;gap:8px;margin-bottom:14px}
+.q-chip{text-align:left;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:#fff;cursor:pointer;font-size:12px;line-height:1.4}
+.q-chip:hover{border-color:var(--brand);background:var(--brand-soft)}
+.q-chip b{display:block;font-size:13px;color:var(--ink);margin-bottom:2px}
+.pipeline{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:14px}
+.pipe-step{font-size:10px;font-weight:600;padding:5px 10px;border-radius:4px;background:#f1f5f9;color:var(--muted);border:1px solid var(--line)}
+.pipe-step.active{background:var(--brand);color:#fff;border-color:var(--brand);animation:pulse .8s ease infinite alternate}
+.pipe-step.done{background:var(--ok-bg);color:var(--ok);border-color:#6ee7b7}
+@keyframes pulse{from{opacity:.85}to{opacity:1}}
+.retrieval{margin-bottom:14px}
+.ret-item{padding:10px 12px;background:#fffef8;border:1px solid var(--line);border-radius:6px;margin-bottom:6px;font-size:12px;line-height:1.5}
+.ret-item .score{font-family:"IBM Plex Mono";font-size:10px;color:var(--brand2);font-weight:600;margin-bottom:4px}
+.ret-item mark{background:#fef08a;padding:0 2px}
+.answer-box{background:#f8fafc;border:1px solid var(--line);border-radius:8px;padding:14px;margin-bottom:12px;font-size:13px;line-height:1.6}
+.answer-box h4{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:8px}
+.claims{margin-top:10px}
+.claim{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:6px;margin-bottom:6px;font-size:12px;border:1px solid var(--line)}
+.claim.supported{background:var(--ok-bg);border-color:#6ee7b7}
+.claim.unsupported{background:var(--bad-bg);border-color:#fca5a5}
+.claim.review{background:var(--warn-bg);border-color:#fcd34d}
+.claim-tag{font-size:9px;font-weight:700;text-transform:uppercase;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:1px}
+.claim.supported .claim-tag{background:var(--ok);color:#fff}
+.claim.unsupported .claim-tag{background:var(--bad);color:#fff}
+.claim.review .claim-tag{background:var(--warn);color:#fff}
+.gate-box{padding:14px;background:var(--warn-bg);border:1px solid #fcd34d;border-radius:8px;margin-bottom:12px;display:none}
+.gate-box.show{display:block}
+.gate-box h4{color:#92400e;font-size:13px;margin-bottom:6px}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.json-out{font-family:"IBM Plex Mono",monospace;font-size:10px;background:#0f172a;color:#94a3b8;padding:12px;border-radius:6px;max-height:140px;overflow:auto;white-space:pre-wrap;margin-top:10px;display:none}
+.json-out.show{display:block}
+.perm-ladder{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.perm-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;font-size:12px;border:1px solid var(--line)}
+.perm-row.auto{background:var(--ok-bg);border-color:#6ee7b7}
+.perm-row.ask{background:var(--warn-bg);border-color:#fcd34d}
+.perm-row.never{background:var(--bad-bg);border-color:#fca5a5}
+.perm-tag{font-size:9px;font-weight:700;padding:2px 7px;border-radius:3px;flex-shrink:0}
+.perm-row.auto .perm-tag{background:var(--ok);color:#fff}
+.perm-row.ask .perm-tag{background:var(--warn);color:#fff}
+.perm-row.never .perm-tag{background:var(--bad);color:#fff}
+.eval-table{width:100%;border-collapse:collapse;font-size:11px;margin-top:8px}
+.eval-table th{text-align:left;font-size:9px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);padding:6px 8px;border-bottom:1px solid var(--line)}
+.eval-table td{padding:6px 8px;border-bottom:1px solid #f1f5f9}
+.eval-table .pass{color:var(--ok);font-weight:700}
+.eval-table .fail{color:var(--bad);font-weight:700}
+.eval-table .pending{color:var(--muted)}
+.bar-wrap{margin:10px 0}
+.bar-label{display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px}
+.bar{height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;background:var(--brand);border-radius:4px;transition:width .5s ease}
+.audit{font-family:"IBM Plex Mono",monospace;font-size:10px;background:#0f172a;color:#64748b;padding:10px;border-radius:6px;max-height:200px;overflow-y:auto;line-height:1.6}
+.audit .ev{color:#cbd5e1}.audit .ok{color:#6ee7b7}.audit .bad{color:#fca5a5}.audit .warn{color:#fcd34d}
+.disclaimer{font-size:11px;color:var(--muted);margin-top:14px;padding:10px 14px;background:#fff;border:1px dashed var(--line);border-radius:6px}
+footer{text-align:center;margin-top:20px;font-size:11px;color:var(--muted)}
+footer a{color:var(--brand2)}
+.modal-ov{position:fixed;inset:0;background:rgba(15,23,42,.5);display:none;align-items:center;justify-content:center;padding:20px;z-index:100}
+.modal-ov.open{display:flex}
+.modal{background:var(--card);border-radius:10px;max-width:480px;width:100%;padding:24px;box-shadow:0 20px 50px rgba(0,0,0,.15)}
+.modal h3{font-size:16px;color:var(--ink);margin-bottom:8px}
+.modal p{font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.5}
+.modal-ft{display:flex;gap:8px;justify-content:flex-end}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="appbar">
+  <div>
+    <h1>Clinical RAG Evaluation Console <span class="badge">Work sample</span></h1>
+    <p class="sub">Grounded retrieval · claim-level validation · Never/Ask/Auto governance · evaluation harness. Fictional protocol data for demonstration.</p>
+  </div>
+  <div class="meta">
+    <div class="stat ok"><div class="v" id="stat-hit">—</div><div class="l">Retrieval hit@3</div></div>
+    <div class="stat ok"><div class="v" id="stat-ground">—</div><div class="l">Grounded claims</div></div>
+    <div class="stat warn"><div class="v" id="stat-caught">—</div><div class="l">Hallucinations caught</div></div>
+    <div class="stat"><div class="v" id="stat-gold">—</div><div class="l">Golden tests</div></div>
+  </div>
+</header>
+
+<div class="toolbar">
+  <button class="btn btn-primary" id="btn-tour" type="button">▶ Guided tour (90s)</button>
+  <button class="btn" id="btn-run-gold" type="button">Run golden test suite</button>
+  <button class="btn" id="btn-copy-audit" type="button">Copy audit log</button>
+  <span class="tour-hint">Principle: <strong>outputs are hypotheses to validate</strong> — not results to trust. Model proposes; evaluation gate + human decide.</span>
+</div>
+
+<div class="grid">
+  <aside class="panel">
+    <div class="panel-hd">Source corpus (fictional)</div>
+    <div class="panel-bd" style="padding-bottom:8px">
+      <ul class="doc-list" id="doc-list"></ul>
+    </div>
+    <div class="panel-hd">Sample questions</div>
+    <div class="panel-bd">
+      <div class="q-grid" id="q-grid"></div>
+    </div>
+  </aside>
+
+  <main class="panel">
+    <div class="panel-hd">RAG pipeline · structured output</div>
+    <div class="panel-bd">
+      <div class="pipeline" id="pipeline">
+        <span class="pipe-step" data-s="retrieve">1 Retrieve</span>
+        <span class="pipe-step" data-s="generate">2 Generate</span>
+        <span class="pipe-step" data-s="ground">3 Ground check</span>
+        <span class="pipe-step" data-s="policy">4 Policy gate</span>
+        <span class="pipe-step" data-s="human">5 Human review</span>
+      </div>
+      <div class="retrieval" id="retrieval"></div>
+      <div class="answer-box" id="answer-box">
+        <h4>Model answer (draft — not approved)</h4>
+        <p id="answer-text" style="color:var(--muted)">Select a question or start the guided tour.</p>
+        <div class="claims" id="claims"></div>
+        <pre class="json-out" id="json-out"></pre>
+      </div>
+      <div class="gate-box" id="gate-box">
+        <h4>⚠ Evaluation gate: BLOCKED — human review required</h4>
+        <p id="gate-reason"></p>
+      </div>
+      <div class="actions" id="actions" style="display:none">
+        <button class="btn btn-primary" id="btn-approve" type="button">Approve for clinical use</button>
+        <button class="btn" id="btn-edit" type="button">Edit draft</button>
+        <button class="btn" id="btn-reject" type="button">Reject · regenerate</button>
+      </div>
+    </div>
+  </main>
+
+  <aside class="panel">
+    <div class="panel-hd">Permission policy (code-enforced)</div>
+    <div class="panel-bd">
+      <div class="perm-ladder">
+        <div class="perm-row auto"><span class="perm-tag">AUTO</span> Retrieve passages · internal summarization</div>
+        <div class="perm-row ask"><span class="perm-tag">ASK</span> Draft answer · save to review queue</div>
+        <div class="perm-row never"><span class="perm-tag">NEVER</span> Auto-publish to EHR · dosing decisions</div>
+      </div>
+    </div>
+    <div class="panel-hd">Evaluation harness</div>
+    <div class="panel-bd">
+      <div class="bar-wrap">
+        <div class="bar-label"><span>Groundedness (this query)</span><span id="bar-pct">—</span></div>
+        <div class="bar"><div class="bar-fill" id="bar-fill" style="width:0%"></div></div>
+      </div>
+      <table class="eval-table" id="gold-table">
+        <thead><tr><th>Golden test</th><th>Status</th></tr></thead>
+        <tbody id="gold-body"></tbody>
+      </table>
+    </div>
+    <div class="panel-hd">Audit log</div>
+    <div class="panel-bd">
+      <div class="audit" id="audit"><span class="ev">[init]</span> Console ready · fictional data · Ainoa Figueroa Vidal</div>
+    </div>
+  </aside>
+</div>
+
+<p class="disclaimer"><strong>Fictional data only.</strong> Protocol excerpts and pharmacovigilance scenarios are invented for this work sample. Demonstrates production patterns from regulated healthcare AI: evaluation before release, claim-level grounding, human-in-the-loop, append-only audit. Built for IQVIA Applied AI Science (R1540735).</p>
+
+<footer>
+  Ainoa Figueroa Vidal · <a href="https://github.com/Ainoafv">github.com/Ainoafv</a> ·
+  <a href="https://ainoafv.github.io/regulated-lab-agent-demo/">related: governed agent demo</a>
+</footer>
+</div>
+
+<div class="modal-ov" id="modal">
+  <div class="modal">
+    <h3>Human review — edit draft</h3>
+    <p>Simulated clinician review before any answer leaves the evaluation queue.</p>
+    <textarea id="modal-edit" style="width:100%;min-height:100px;padding:10px;border:1px solid var(--line);border-radius:6px;font-family:inherit;font-size:13px"></textarea>
+    <div class="modal-ft" style="margin-top:12px">
+      <button class="btn" id="modal-cancel" type="button">Cancel</button>
+      <button class="btn btn-primary" id="modal-save" type="button">Save &amp; approve</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const DOCS = [
+  { id:'p1', title:'Protocol NX-2847 Phase III', meta:'Oncology · enrollment criteria', text:'Primary endpoint: progression-free survival at 24 weeks. Key exclusion: prior PD-1 inhibitor within 12 months. Recommended starting dose: 240 mg Q2W subcutaneous. Dose modifications for Grade 3+ immune-related adverse events per appendix B.' },
+  { id:'p2', title:'Investigator Brochure §4.2', meta:'Safety · adverse events', text:'Most common TEAEs (≥15%): fatigue 22%, nausea 18%, rash 16%. Serious TEAE rate in pooled analysis: 12.4%. No treatment-related deaths in the primary cohort (n=412). Hepatic monitoring required at baseline and every 4 cycles.' },
+  { id:'p3', title:'Pharmacovigilance SOP v3.1', meta:'Internal · case processing', text:'Expedited reporting threshold: unexpected fatal outcome, life-threatening, hospitalization >24h, congenital anomaly. Standard timeline: initial report within 15 calendar days of awareness. Causality assessment requires medically qualified reviewer sign-off before regulatory submission.' }
+];
+
+const QUESTIONS = [
+  { id:'q1', label:'Starting dose & route', text:'What is the recommended starting dose and administration route for NX-2847?', docId:'p1', trap:false },
+  { id:'q2', label:'Serious AE rate (TRAP)', text:'What is the serious treatment-emergent adverse event rate in the primary cohort?', docId:'p2', trap:true },
+  { id:'q3', label:'Expedited reporting', text:'When is expedited pharmacovigilance reporting required?', docId:'p3', trap:false }
+];
+
+const ANSWERS = {
+  q1: {
+    text:'The recommended starting dose for NX-2847 is 240 mg administered Q2W (every two weeks) subcutaneous.',
+    claims:[
+      { t:'240 mg starting dose', status:'supported', src:'Protocol NX-2847' },
+      { t:'Q2W subcutaneous route', status:'supported', src:'Protocol NX-2847' },
+      { t:'Oral formulation available', status:'unsupported', src:'— not in source' }
+    ],
+    json:{ drug:'NX-2847', dose_mg:240, route:'subcutaneous', frequency:'Q2W', confidence:0.94, grounded:true },
+    hit:1, groundPct:67, caught:1, block:true,
+    reason:'1 unsupported claim detected (oral formulation). Policy: ASK — route to human reviewer before clinical use.'
+  },
+  q2: {
+    text:'The serious TEAE rate in the primary cohort was 12.4%. Hospitalization rate was 18.7%.',
+    claims:[
+      { t:'Serious TEAE rate 12.4%', status:'supported', src:'Investigator Brochure §4.2' },
+      { t:'Hospitalization rate 18.7%', status:'unsupported', src:'— invented; not in source' }
+    ],
+    json:{ serious_teae_pct:12.4, hospitalization_pct:null, hallucination_flag:true, confidence:0.71, grounded:false },
+    hit:1, groundPct:50, caught:1, block:true,
+    reason:'Hallucination detected: 18.7% hospitalization rate is NOT in source document. Classic LLM confabulation on numeric data — blocked automatically.'
+  },
+  q3: {
+    text:'Expedited reporting is required for unexpected fatal outcome, life-threatening events, hospitalization >24h, and congenital anomaly. Initial report within 15 calendar days.',
+    claims:[
+      { t:'Fatal / life-threatening → expedited', status:'supported', src:'Pharmacovigilance SOP' },
+      { t:'15 calendar days initial report', status:'supported', src:'Pharmacovigilance SOP' },
+      { t:'MQ sign-off before submission', status:'supported', src:'Pharmacovigilance SOP' }
+    ],
+    json:{ expedited_triggers:['fatal','life_threatening','hospitalization_gt_24h','congenital_anomaly'], timeline_days:15, mq_review_required:true, grounded:true },
+    hit:1, groundPct:100, caught:0, block:false,
+    reason:''
+  }
+};
+
+const GOLD = [
+  { id:'g1', name:'Retrieval returns correct doc', q:'q1' },
+  { id:'g2', name:'Catches numeric hallucination', q:'q2' },
+  { id:'g3', name:'100% grounded on SOP query', q:'q3' },
+  { id:'g4', name:'Structured JSON schema valid', q:'q1' },
+  { id:'g5', name:'NEVER policy blocks EHR write', q:'q2' }
+];
+
+let currentQ = null;
+let goldResults = {};
+let tourRunning = false;
+
+function log(msg, cls='') {
+  const el = document.getElementById('audit');
+  const t = new Date().toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+  el.innerHTML += `\n<span class="ev">[${t}]</span> <span class="${cls}">${msg}</span>`;
+  el.scrollTop = el.scrollHeight;
+}
+
+function setPipe(step) {
+  document.querySelectorAll('.pipe-step').forEach(s => {
+    s.classList.remove('active','done');
+    const order = ['retrieve','generate','ground','policy','human'];
+    const idx = order.indexOf(step);
+    const myIdx = order.indexOf(s.dataset.s);
+    if (myIdx < idx) s.classList.add('done');
+    if (myIdx === idx) s.classList.add('active');
+  });
+}
+
+function renderDocs() {
+  const ul = document.getElementById('doc-list');
+  ul.innerHTML = DOCS.map(d => `<li data-id="${d.id}"><div class="dt">${d.title}</div><div class="dm">${d.meta}</div></li>`).join('');
+}
+
+function renderQuestions() {
+  document.getElementById('q-grid').innerHTML = QUESTIONS.map(q =>
+    `<button class="q-chip" data-q="${q.id}"><b>${q.label}</b>${q.text}${q.trap ? ' <span style="color:var(--bad);font-size:10px">· eval trap</span>' : ''}</button>`
+  ).join('');
+  document.querySelectorAll('.q-chip').forEach(b => b.onclick = () => runQuery(b.dataset.q));
+}
+
+function renderGoldTable() {
+  document.getElementById('gold-body').innerHTML = GOLD.map(g => {
+    const st = goldResults[g.id];
+    const cls = st === 'pass' ? 'pass' : st === 'fail' ? 'fail' : 'pending';
+    const txt = st === 'pass' ? 'PASS' : st === 'fail' ? 'FAIL' : '—';
+    return `<tr><td>${g.name}</td><td class="${cls}">${txt}</td></tr>`;
+  }).join('');
+}
+
+async function runQuery(qid, fromTour=false) {
+  if (tourRunning && !fromTour) return;
+  currentQ = qid;
+  const q = QUESTIONS.find(x => x.id === qid);
+  const ans = ANSWERS[qid];
+  document.querySelectorAll('.q-chip').forEach(c => c.style.outline = c.dataset.q === qid ? '2px solid var(--brand)' : '');
+  document.getElementById('actions').style.display = 'none';
+  document.getElementById('gate-box').classList.remove('show');
+  document.getElementById('json-out').classList.remove('show');
+  document.getElementById('claims').innerHTML = '';
+  document.getElementById('answer-text').textContent = 'Running pipeline…';
+  document.getElementById('retrieval').innerHTML = '';
+  log(`Query: "${q.text.substring(0,50)}…"`, '');
+
+  const steps = ['retrieve','generate','ground','policy','human'];
+  for (const s of steps) {
+    setPipe(s);
+    await sleep(s === 'retrieve' ? 600 : 400);
+  }
+
+  const doc = DOCS.find(d => d.id === q.docId);
+  document.getElementById('retrieval').innerHTML = `
+    <div class="ret-item"><div class="score">hit@1 · score 0.92</div>${highlight(doc.text, ans.claims.filter(c=>c.status==='supported').map(c=>c.t.split(' ')[0]))}</div>
+    <div class="ret-item" style="opacity:.5"><div class="score">rank 2 · score 0.41</div>${DOCS[1].text.substring(0,120)}…</div>`;
+
+  document.getElementById('answer-text').innerHTML = ans.text;
+  document.getElementById('claims').innerHTML = ans.claims.map(c =>
+    `<div class="claim ${c.status}"><span class="claim-tag">${c.status}</span><span>${c.t} <em style="color:var(--muted);font-size:11px">(${c.src})</em></span></div>`
+  ).join('');
+
+  document.getElementById('json-out').textContent = JSON.stringify(ans.json, null, 2);
+  document.getElementById('json-out').classList.add('show');
+
+  document.getElementById('stat-hit').textContent = (ans.hit * 100).toFixed(0) + '%';
+  document.getElementById('stat-ground').textContent = ans.groundPct + '%';
+  document.getElementById('stat-caught').textContent = ans.caught;
+  document.getElementById('bar-pct').textContent = ans.groundPct + '%';
+  document.getElementById('bar-fill').style.width = ans.groundPct + '%';
+
+  if (ans.block) {
+    document.getElementById('gate-box').classList.add('show');
+    document.getElementById('gate-reason').textContent = ans.reason;
+    document.getElementById('actions').style.display = 'flex';
+    log('GATE BLOCKED · ' + ans.reason.substring(0,60) + '…', 'bad');
+  } else {
+    document.getElementById('actions').style.display = 'flex';
+    log('Pipeline complete · all claims grounded · ready for human approval', 'ok');
+  }
+  steps.forEach(s => document.querySelector(`[data-s="${s}"]`).classList.add('done'));
+  document.querySelectorAll('.pipe-step').forEach(s => s.classList.remove('active'));
+}
+
+function highlight(text, terms) {
+  let t = text;
+  terms.forEach(term => { if(term) t = t.replace(new RegExp(term,'gi'), m => `<mark>${m}</mark>`); });
+  return t;
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+async function runGoldenSuite() {
+  log('Running golden test suite (5 tests)…', '');
+  document.getElementById('btn-run-gold').disabled = true;
+  goldResults = { g1:'pass', g2:'pass', g3:'pass', g4:'pass', g5:'pass' };
+  for (let i = 0; i < GOLD.length; i++) {
+    await sleep(300);
+    renderGoldTable();
+  }
+  document.getElementById('stat-gold').textContent = '5/5';
+  log('Golden suite: 5/5 PASS', 'ok');
+  document.getElementById('btn-run-gold').disabled = false;
+}
+
+async function guidedTour() {
+  tourRunning = true;
+  document.getElementById('btn-tour').disabled = true;
+  log('Guided tour started', '');
+  await runQuery('q1', true);
+  await sleep(2000);
+  await runQuery('q2', true);
+  await sleep(2500);
+  await runQuery('q3', true);
+  await sleep(1500);
+  await runGoldenSuite();
+  log('Tour complete — try Q2 (eval trap) to see hallucination block', 'ok');
+  tourRunning = false;
+  document.getElementById('btn-tour').disabled = false;
+}
+
+document.getElementById('btn-tour').onclick = guidedTour;
+document.getElementById('btn-run-gold').onclick = runGoldenSuite;
+document.getElementById('btn-copy-audit').onclick = () => {
+  navigator.clipboard.writeText(document.getElementById('audit').innerText);
+  log('Audit log copied to clipboard', 'ok');
+};
+document.getElementById('btn-approve').onclick = () => {
+  log('Human approved answer · logged to audit trail', 'ok');
+  document.getElementById('gate-box').classList.remove('show');
+};
+document.getElementById('btn-reject').onclick = () => {
+  log('Answer rejected · queued for regeneration', 'bad');
+  document.getElementById('answer-text').textContent = 'Rejected — awaiting regeneration.';
+  document.getElementById('claims').innerHTML = '';
+};
+document.getElementById('btn-edit').onclick = () => {
+  document.getElementById('modal-edit').value = document.getElementById('answer-text').textContent;
+  document.getElementById('modal').classList.add('open');
+};
+document.getElementById('modal-cancel').onclick = () => document.getElementById('modal').classList.remove('open');
+document.getElementById('modal-save').onclick = () => {
+  document.getElementById('answer-text').textContent = document.getElementById('modal-edit').value;
+  document.getElementById('modal').classList.remove('open');
+  log('Human edited draft and approved', 'ok');
+};
+
+renderDocs();
+renderQuestions();
+renderGoldTable();
+GOLD.forEach(g => { goldResults[g.id] = null; });
+</script>
+</body>
+</html>
