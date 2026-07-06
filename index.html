@@ -3,541 +3,558 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Clinical RAG Evaluation Console — Applied AI Science · Ainoa Figueroa Vidal</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<title>Clinical RAG Evaluation Console · Applied AI Science · Ainoa Figueroa Vidal</title>
+<!-- v4 · IQVIA Apollo-inspired palette · cache-bust on deploy -->
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --ink:#0a1628; --mute:#5c6b82; --rule:#d8dee9; --bg:#eceff4; --card:#fff;
-  --accent:#1e4fd8; --accent2:#3b6ef0; --accent-glow:rgba(30,79,216,.35);
-  --navy:#0f2347; --soft:#e8eefb; --soft2:#f5f8fd;
-  --ok:#047857; --ok-bg:#ecfdf5; --ok-line:#6ee7b7;
-  --warn:#b45309; --warn-bg:#fffbeb; --warn-line:#fcd34d;
-  --bad:#c0392b; --bad-bg:#fef2f2; --bad-line:#fca5a5;
-  --gold:#9a7b2f;
+  --iqvia-blue:#002B5C; --iqvia-green:#00A651; --iqvia-white:#FFFFFF;
+  --ink:#002B5C; --mute:#5a6d82; --rule:#c5d0de; --bg:#eef1f5; --card:#fff;
+  --ok:#008743; --ok-bg:#e6f5ec; --warn:#c47f00; --warn-bg:#fef6e6;
+  --bad:#c41e3a; --bad-bg:#fde8ec; --running:#2563eb; --running-bg:#e8f0fe;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:"IBM Plex Sans",system-ui,sans-serif;background:var(--bg);background-image:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(30,79,216,.08),transparent);color:#2d3748;font-size:15px;line-height:1.5;min-height:100vh}
-body.running .spot.on{animation:glowblue 1.5s ease-in-out infinite}
-.wrap{max-width:1420px;margin:0 auto;padding:24px 20px 64px}
+body{font-family:"Source Sans 3",system-ui,sans-serif;background:var(--bg);color:#1a2b3c;font-size:16px;line-height:1.5;min-height:100vh}
+body.running .spot.on{box-shadow:0 0 0 3px rgba(0,166,81,.45),0 12px 40px rgba(0,43,92,.18)!important}
+.wrap{max-width:1480px;margin:0 auto;padding:20px 24px 72px}
 
-/* ---- PREMIUM CAROUSEL ---- */
-.intro-ov{position:fixed;inset:0;background:linear-gradient(145deg,#060d1a 0%,#0f2347 50%,#152a52 100%);display:flex;align-items:center;justify-content:center;z-index:80;padding:28px;overflow-y:auto}
+/* INTRO — editorial, IQVIA blue, no numbered pills */
+.intro-ov{position:fixed;inset:0;background:var(--iqvia-blue);z-index:100;display:flex;align-items:stretch;justify-content:center;padding:0}
 .intro-ov.hide{display:none}
-.intro{background:#fff;border-radius:4px;max-width:880px;width:100%;min-height:480px;box-shadow:0 40px 100px rgba(0,0,0,.45);position:relative;border:none;overflow:hidden;display:flex;flex-direction:column}
-.intro-top{height:5px;background:linear-gradient(90deg,var(--navy),var(--accent),#5b8def)}
-.intro-body{padding:40px 48px 32px;flex:1}
-.intro .skip{position:absolute;top:20px;right:24px;border:none;background:rgba(255,255,255,.9);color:var(--mute);font-size:13px;font-weight:600;cursor:pointer;padding:8px 14px;border-radius:4px;border:1px solid var(--rule)}
-.intro .skip:hover{color:var(--ink);border-color:var(--accent)}
-.intro-progress{display:flex;gap:6px;margin-bottom:28px}
-.intro-progress span{flex:1;height:4px;background:#e2e8f0;border-radius:2px;transition:.3s}
-.intro-progress span.on{background:var(--accent)}
-.intro .ik{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
-.intro h3{font-size:32px;font-weight:700;color:var(--ink);letter-spacing:-.5px;margin-bottom:16px;line-height:1.15}
-.intro .obj{font-size:17px;color:#475569;margin-bottom:24px;line-height:1.6;max-width:680px}
-.intro .obj b{color:var(--ink)}
-.intro-split{display:grid;grid-template-columns:1fr 280px;gap:32px;align-items:center;margin-bottom:28px}
-@media(max-width:700px){.intro-split{grid-template-columns:1fr}}
-.intro-visual{background:linear-gradient(160deg,var(--navy),#1a3a6e);border-radius:6px;padding:28px 24px;color:#fff;min-height:200px;display:flex;flex-direction:column;justify-content:center;gap:14px}
-.iv-row{display:flex;align-items:center;gap:12px;font-size:14px;font-weight:500;opacity:.45;transition:.3s}
-.iv-row.lit{opacity:1}
-.iv-dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.25);flex-shrink:0}
-.iv-row.lit .iv-dot{background:#5b8def;box-shadow:0 0 12px #5b8def}
-.intro-pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px}
-.pillar{background:var(--soft2);border-top:3px solid var(--accent);padding:20px 18px;border-radius:0 0 4px 4px}
-.pillar .pl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:8px}
-.pillar .pt{font-size:16px;font-weight:700;color:var(--ink);margin-bottom:6px}
-.pillar .pd{font-size:14px;color:var(--mute);line-height:1.45}
-.intro-quote{background:var(--navy);color:#fff;border-radius:6px;padding:28px 32px;margin-bottom:28px;position:relative}
-.intro-quote::before{content:'"';position:absolute;top:8px;left:20px;font-size:64px;color:rgba(255,255,255,.12);font-family:Georgia,serif;line-height:1}
-.intro-quote p{font-size:20px;font-weight:600;line-height:1.45;margin-bottom:12px;padding-left:8px}
-.intro-quote span{font-size:14px;color:rgba(255,255,255,.65)}
-.introfeat{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:28px}
-@media(max-width:600px){.introfeat{grid-template-columns:1fr}}
-.ifeat{padding:18px 20px;border:1px solid var(--rule);border-left:4px solid var(--accent);background:#fafbfc}
-.ifeat .r{font-weight:700;font-size:16px;color:var(--ink);margin-bottom:6px}
-.ifeat .d{font-size:14px;color:#475569;line-height:1.5}
-.intro ol{list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:16px;margin-bottom:28px}
-.intro ol li{counter-increment:s;padding-left:48px;position:relative;font-size:16px;color:#334155;line-height:1.5}
-.intro ol li::before{content:counter(s);position:absolute;left:0;top:0;width:32px;height:32px;border-radius:4px;background:var(--navy);color:#fff;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center}
-.intro ol li b{color:var(--ink)}
-.intronav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 48px 28px;border-top:1px solid var(--rule);background:#fafbfc}
-.startbtn{border:none;background:var(--navy);color:#fff;font-family:inherit;font-weight:600;font-size:15px;padding:14px 28px;border-radius:4px;cursor:pointer;letter-spacing:.02em}
-.startbtn:hover{background:#1a3a6e}
-.backbtn{border:1px solid var(--rule);background:#fff;color:var(--mute);font-family:inherit;font-weight:600;font-size:14px;padding:13px 22px;border-radius:4px;cursor:pointer}
-.backbtn:hover{border-color:var(--accent);color:var(--accent)}
+.intro{width:100%;max-width:960px;display:flex;flex-direction:column;justify-content:center;padding:48px 56px 40px;color:#fff;position:relative}
+.intro .skip{position:absolute;top:24px;right:32px;background:transparent;border:1px solid rgba(255,255,255,.35);color:#fff;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+.intro .skip:hover{background:rgba(255,255,255,.1)}
+.intro-kicker{font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--iqvia-green);margin-bottom:16px}
+.intro h2{font-size:42px;font-weight:700;line-height:1.12;letter-spacing:-.02em;margin-bottom:20px;max-width:720px}
+.intro-lead{font-size:19px;line-height:1.55;color:rgba(255,255,255,.82);max-width:640px;margin-bottom:36px}
+.intro-flow{display:flex;align-items:center;gap:0;margin-bottom:40px;flex-wrap:wrap}
+.if-step{padding:14px 20px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);font-size:14px;font-weight:600;white-space:nowrap}
+.if-step.on{background:var(--iqvia-green);border-color:var(--iqvia-green);color:#fff}
+.if-arr{color:rgba(255,255,255,.4);font-size:18px;padding:0 6px}
+.intro-quote{font-size:22px;font-weight:600;line-height:1.45;border-left:4px solid var(--iqvia-green);padding-left:24px;margin-bottom:32px;max-width:680px}
+.intro-nav{display:flex;gap:16px;align-items:center;margin-top:8px}
+.intro-nav button{font-family:inherit;font-size:15px;font-weight:600;padding:14px 32px;border:none;cursor:pointer}
+.btn-enter{background:var(--iqvia-green);color:#fff}
+.btn-enter:hover{filter:brightness(1.08)}
+.btn-back-intro{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.4)!important}
+.intro-dots{display:flex;gap:10px;margin-left:auto}
+.intro-dots i{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.25);display:block}
+.intro-dots i.on{background:var(--iqvia-green)}
 
-/* ---- header ---- */
-.appbar{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;background:var(--card);border:1px solid var(--rule);border-left:5px solid var(--navy);border-radius:4px;padding:22px 28px;flex-wrap:wrap;box-shadow:0 4px 20px rgba(10,22,40,.06)}
-.brand{display:flex;align-items:center;gap:18px}
-.logo{width:52px;height:52px;border-radius:4px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;flex-shrink:0}
-.appname{font-size:22px;font-weight:700;color:var(--ink);letter-spacing:-.03em}
-.proto{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);background:var(--soft);border:1px solid #c7d7f5;padding:3px 10px;margin-left:10px;vertical-align:middle;border-radius:2px}
-.appdesc{font-size:14px;color:var(--mute);margin-top:6px;max-width:580px;line-height:1.5}
-.kpi-row{display:flex;gap:12px;flex-wrap:wrap}
-.kpi{background:#fafbfc;border:1px solid var(--rule);border-radius:4px;padding:12px 16px;display:flex;align-items:center;gap:14px;min-width:130px}
-.kpi-chart{width:52px;height:52px;flex-shrink:0}
-.kpi-data .kl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--mute)}
-.kpi-data .kv{font-size:26px;font-weight:700;color:var(--ink);font-family:"IBM Plex Mono",monospace;line-height:1.1;margin-top:2px}
-.kpi-data .kv.ok{color:var(--ok)} .kpi-data .kv.warn{color:var(--warn)} .kpi-data .kv.bad{color:var(--bad)}
-.subbar{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin:12px 4px 0;font-size:13px;color:var(--mute)}
+/* HEADER */
+.topstripe{height:4px;background:linear-gradient(90deg,var(--iqvia-blue) 70%,var(--iqvia-green))}
+.appbar{background:var(--card);border:1px solid var(--rule);padding:24px 32px;display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between;align-items:flex-start}
+.brand-block h1{font-size:24px;font-weight:700;color:var(--iqvia-blue);letter-spacing:-.02em}
+.brand-block .tagline{font-size:15px;color:var(--mute);margin-top:6px;max-width:560px}
+.worksample{display:inline-block;margin-top:10px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--iqvia-green);border:1px solid var(--iqvia-green);padding:4px 12px}
 
-.toolbar{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:center;background:var(--card);border:1px solid var(--rule);border-radius:4px;padding:16px 22px;margin:18px 0}
-.starthere{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#fff;background:var(--accent);padding:6px 14px;border-radius:2px}
-.play{border:none;background:var(--navy);color:#fff;font-family:inherit;font-weight:700;font-size:16px;padding:14px 26px;border-radius:4px;cursor:pointer;display:inline-flex;align-items:center;gap:10px;box-shadow:0 4px 14px rgba(15,35,71,.25)}
-.play:hover{background:#1a3a6e;transform:translateY(-1px)}
-.play:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.tourhint{font-size:14px;color:var(--mute);max-width:420px;line-height:1.5}
-.howto{border:1px solid var(--rule);background:#fff;color:var(--ink);font-family:inherit;font-weight:600;font-size:14px;padding:12px 20px;border-radius:4px;cursor:pointer}
-.howto:hover{border-color:var(--accent);color:var(--accent)}
+/* GOVERNANCE FLOWCHART */
+.gov-section{background:var(--card);border:1px solid var(--rule);margin:20px 0;padding:24px 28px}
+.gov-section h2{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--iqvia-blue);margin-bottom:16px}
+.gov-svg{width:100%;overflow-x:auto}
+.gov-svg svg{min-width:900px;width:100%;height:auto;display:block}
+.gov-legend{display:flex;flex-wrap:wrap;gap:20px;margin-top:14px;font-size:13px;color:var(--mute)}
+.gov-legend span{display:flex;align-items:center;gap:8px}
+.gl{width:14px;height:14px;border-radius:2px;flex-shrink:0}
 
-.narr{display:none;align-items:flex-start;gap:16px;background:var(--navy);color:#fff;border-radius:4px;padding:18px 24px;margin-bottom:18px;box-shadow:0 8px 24px rgba(15,35,71,.2)}
-.narr.show{display:flex;animation:slideDown .35s ease}
-.narr .act{flex-shrink:0;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:var(--accent);padding:6px 14px;border-radius:2px}
-.narr .ntext{font-size:16px;font-weight:500;color:rgba(255,255,255,.92);line-height:1.5}
-.narr .ntext b{color:#fff;font-weight:700}
+/* METRICS STRIP — gradient bars */
+.metrics-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:20px 0}
+@media(max-width:900px){.metrics-strip{grid-template-columns:1fr 1fr}}
+.metric-card{background:var(--card);border:1px solid var(--rule);padding:18px 20px}
+.metric-card .ml{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--mute);margin-bottom:8px}
+.metric-card .mv{font-size:32px;font-weight:700;font-family:"Source Code Pro",monospace;color:var(--iqvia-blue);margin-bottom:10px}
+.metric-card .mv.ok{color:var(--ok)} .metric-card .mv.warn{color:var(--warn)} .metric-card .mv.bad{color:var(--bad)}
+.grad-bar{height:14px;border-radius:2px;background:#dde4ec;overflow:hidden;position:relative}
+.grad-fill{height:100%;border-radius:2px;transition:width 1s cubic-bezier(.4,0,.2,1);background:linear-gradient(90deg,var(--bad) 0%,var(--warn) 45%,var(--iqvia-green) 100%);background-size:200% 100%;width:0}
+.grad-threshold{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--iqvia-blue);left:80%;opacity:.7}
+.grad-threshold::after{content:'80% gate';position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:700;color:var(--iqvia-blue);white-space:nowrap}
 
-.sectionhd{display:flex;align-items:center;gap:18px;margin:36px 0 18px}
-.snum{font-family:"IBM Plex Mono";font-weight:600;font-size:15px;color:#fff;background:var(--navy);width:38px;height:38px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.sectionhd h3{font-size:22px;font-weight:700;color:var(--ink);letter-spacing:-.3px}
-.sectionhd .sdesc{font-size:14px;color:var(--mute);font-weight:400;margin-top:4px}
+.toolbar{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;background:var(--iqvia-blue);color:#fff;padding:16px 24px;margin-bottom:20px}
+.toolbar .play{background:var(--iqvia-green);border:none;color:#fff;font-family:inherit;font-size:16px;font-weight:700;padding:14px 28px;cursor:pointer;display:inline-flex;align-items:center;gap:10px}
+.toolbar .play:disabled{opacity:.5}
+.toolbar .hint{font-size:15px;color:rgba(255,255,255,.85);max-width:480px;line-height:1.45}
+.toolbar .howto{background:transparent;border:1px solid rgba(255,255,255,.4);color:#fff;font-family:inherit;font-size:14px;font-weight:600;padding:12px 20px;cursor:pointer}
 
-.flowcard{background:var(--card);border:1px solid var(--rule);border-radius:4px;padding:28px 32px;margin-bottom:18px;transition:.35s}
-.flowcard.spot.on{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-glow),0 12px 40px rgba(30,79,216,.15)}
-.flowrow{display:flex;align-items:stretch;gap:0;overflow-x:auto;padding:8px 0}
-.fnode{flex:1;min-width:120px;text-align:center;padding:20px 12px;border:2px solid var(--rule);border-radius:4px;background:#fafbfc;margin:0 6px;opacity:.35;transform:scale(.95);transition:.4s;position:relative}
-.fnode::after{content:'';position:absolute;inset:-4px;border-radius:6px;border:2px solid transparent;transition:.3s}
-.fnode.active::after{border-color:var(--accent);animation:ring 1.2s ease infinite}
-.fnode .fn{font-size:28px;margin-bottom:8px}
-.fnode .fl{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink)}
-.fnode .fs{font-size:13px;font-weight:600;color:var(--accent);margin-top:6px;min-height:18px}
-.fnode.active{opacity:1;transform:scale(1.04);border-color:var(--accent);background:var(--soft);box-shadow:0 8px 28px rgba(30,79,216,.22)}
-.fnode.done{opacity:1;border-color:var(--ok-line);background:var(--ok-bg)}
-.fnode.done .fs{color:var(--ok)}
-.fnode.blocked{opacity:1;border-color:var(--bad-line);background:var(--bad-bg);animation:shake .5s ease}
-.fnode.blocked .fs{color:var(--bad)}
-.farrow{align-self:center;color:#cbd5e1;font-size:22px;font-weight:300;flex-shrink:0}
-.farrow.lit{color:var(--accent);text-shadow:0 0 8px var(--accent-glow)}
-.flowcap{font-size:14px;color:var(--mute);margin-top:16px;line-height:1.5}
+.narr{background:var(--iqvia-blue);color:#fff;padding:18px 24px;margin-bottom:20px;display:none;border-left:5px solid var(--iqvia-green)}
+.narr.show{display:block}
+.narr b{color:#fff}
+.narr-tag{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;background:var(--iqvia-green);padding:4px 12px;margin-right:12px}
 
-.grid{display:grid;grid-template-columns:300px minmax(0,1.4fr) 360px;gap:18px;align-items:start}
-@media(max-width:1180px){.grid{grid-template-columns:1fr 1fr}}
-@media(max-width:760px){.grid{grid-template-columns:1fr}}
-.panel{background:var(--card);border:1px solid var(--rule);border-radius:4px;overflow:hidden;transition:.35s}
-.panel.spot.on{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-glow),0 10px 32px rgba(30,79,216,.12);transform:translateY(-3px)}
-.panel-hd{padding:16px 20px;background:var(--navy);display:flex;align-items:center;gap:12px}
-.panel-hd .pn{font-family:"IBM Plex Mono";font-size:13px;font-weight:600;color:var(--navy);background:#fff;width:28px;height:28px;border-radius:3px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.panel-hd .pt{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#fff}
-.panel-bd{padding:20px 22px}
-.lbl{font-size:12px;font-weight:700;color:var(--mute);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px}
+.layout{display:grid;grid-template-columns:340px minmax(0,1.5fr) 380px;gap:20px;align-items:start}
+@media(max-width:1200px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--card);border:1px solid var(--rule);transition:.35s}
+.panel.spot.on{border-color:var(--iqvia-green);transform:translateY(-2px)}
+.panel-head{background:var(--iqvia-blue);color:#fff;padding:14px 20px;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
 
-.doc-list{list-style:none}
-.doc-list li{padding:14px 16px;border-radius:4px;margin-bottom:6px;border:1px solid transparent;font-size:14px;cursor:pointer;transition:.15s}
-.doc-list li:hover{background:#f8fafc;border-color:var(--rule)}
-.doc-list li.on{background:var(--soft);border-color:#93b4f5}
-.doc-list .dt{font-weight:600;color:var(--ink);font-size:15px}
-.doc-list .dm{font-size:13px;color:var(--mute);margin-top:3px}
+/* PROTOCOL VIEWER */
+.cite-bar{display:flex;align-items:center;gap:12px;padding:14px 18px;background:#f4f7fa;border-bottom:1px solid var(--rule);flex-wrap:wrap}
+.cite-bar label{font-size:13px;font-weight:600;color:var(--mute)}
+.cite-bar select{font-family:inherit;font-size:14px;padding:8px 12px;border:1px solid var(--rule);background:#fff;color:var(--ink);min-width:160px}
+.protocol-doc{padding:18px;font-size:14px;line-height:1.6;max-height:280px;overflow-y:auto;background:#fafbfc;border:1px solid var(--rule);margin:16px}
+.protocol-doc .ph{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--mute);margin-bottom:4px}
+.protocol-doc .ptitle{font-size:17px;font-weight:700;color:var(--iqvia-blue);margin-bottom:12px}
+.protocol-doc .pmeta{font-size:12px;color:var(--mute);margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--rule)}
+.protocol-doc .sec{margin-bottom:14px}
+.protocol-doc .sec-h{font-weight:700;color:var(--iqvia-blue);font-size:13px;margin-bottom:4px}
+.protocol-doc mark{background:#fff3b0;padding:0 2px;font-weight:600}
+.cite-out{font-size:13px;padding:12px 18px;background:var(--ok-bg);border-top:1px solid var(--ok);color:#1a4d32;font-family:"Source Code Pro",monospace;line-height:1.5;display:none}
+.cite-out.show{display:block}
 
-.q-grid{display:grid;gap:10px}
-.q-chip{text-align:left;padding:16px 18px;border:2px solid var(--rule);border-radius:4px;background:#fff;cursor:pointer;font-size:14px;line-height:1.5;transition:.15s;width:100%;font-family:inherit}
-.q-chip:hover{border-color:var(--accent);background:var(--soft2)}
-.q-chip.sel{border-color:var(--accent);background:var(--soft);box-shadow:0 4px 16px rgba(30,79,216,.15)}
-.q-chip b{display:block;font-size:15px;color:var(--ink);margin-bottom:4px}
-.q-chip .trap{font-size:11px;font-weight:700;color:#fff;background:var(--bad);border-radius:3px;padding:2px 8px;margin-left:6px}
+.doc-tabs{display:flex;border-bottom:1px solid var(--rule);overflow-x:auto}
+.doc-tab{flex:1;min-width:0;padding:12px 10px;font-size:12px;font-weight:600;text-align:center;cursor:pointer;border-bottom:3px solid transparent;color:var(--mute);background:#f8fafc;font-family:inherit;border-left:none;border-right:none;border-top:none}
+.doc-tab.on{color:var(--iqvia-blue);border-bottom-color:var(--iqvia-green);background:#fff}
 
-.steps{display:flex;flex-direction:column;gap:12px;margin-bottom:18px}
-.step{border:1px solid var(--rule);border-left:4px solid var(--rule);border-radius:4px;padding:16px 18px;opacity:.25;transform:translateY(8px);transition:.45s}
-.step.show{opacity:1;transform:none}
-.step.show.glow{animation:glowonce 1.4s ease-out}
-.step .stitle{font-weight:700;font-size:15px;color:var(--ink);display:flex;align-items:center;gap:10px}
-.step .num{width:26px;height:26px;border-radius:3px;background:var(--navy);color:#fff;font-size:13px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
-.step .body{font-size:14px;margin-top:8px;color:#475569;line-height:1.5}
-.step.s-retrieve{border-left-color:#38bdf8}.step.s-generate{border-left-color:#818cf8}
-.step.s-ground{border-left-color:var(--accent)}.step.s-policy{border-left-color:var(--warn)}
-.step.s-human{border-left-color:var(--ok)}
+.q-list{padding:16px;display:flex;flex-direction:column;gap:10px}
+.q-btn{text-align:left;padding:16px;border:2px solid var(--rule);background:#fff;cursor:pointer;font-family:inherit;font-size:14px;line-height:1.45;transition:.15s}
+.q-btn:hover{border-color:var(--iqvia-blue)}
+.q-btn.on{border-color:var(--iqvia-green);background:var(--ok-bg)}
+.q-btn .ql{font-weight:700;font-size:15px;color:var(--iqvia-blue);margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.q-btn .trap{background:var(--bad);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;letter-spacing:.04em}
 
-.ret-item{padding:16px 18px;background:#fffef5;border:1px solid var(--rule);border-left:4px solid var(--accent);border-radius:4px;margin-bottom:10px;font-size:14px;line-height:1.6;opacity:0;transform:translateY(10px);transition:.45s}
-.ret-item.show{opacity:1;transform:none}
-.ret-item .score{font-family:"IBM Plex Mono";font-size:12px;color:var(--accent);font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:10px}
-.ret-item .score-bar{flex:1;height:6px;background:#e2e8f0;border-radius:3px;max-width:120px;overflow:hidden}
-.ret-item .score-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .6s ease}
-.ret-item mark{background:#fde68a;padding:1px 3px;font-weight:600}
+.pipeline-steps{margin-bottom:20px}
+.ps{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:20px}
+@media(max-width:800px){.ps{grid-template-columns:1fr}}
+.ps-item{text-align:center;padding:16px 10px;border:2px solid var(--rule);background:#f8fafc;opacity:.35;transition:.4s}
+.ps-item.on{opacity:1;border-color:var(--iqvia-green);background:var(--ok-bg);box-shadow:0 4px 16px rgba(0,166,81,.2)}
+.ps-item.fail{opacity:1;border-color:var(--bad);background:var(--bad-bg)}
+.ps-item .ps-n{font-size:22px;margin-bottom:6px}
+.ps-item .ps-l{font-size:11px;font-weight:700;text-transform:uppercase;color:var(--iqvia-blue)}
+.ps-item .ps-s{font-size:12px;font-weight:600;color:var(--mute);margin-top:4px;min-height:16px}
 
-.answer-box{background:#fafbfc;border:1px solid var(--rule);border-radius:4px;padding:20px;margin-bottom:16px}
-.answer-box h4{font-size:12px;font-weight:700;color:var(--mute);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;display:flex;align-items:center;gap:10px}
-.untrusted{font-size:11px;font-weight:700;color:var(--warn);background:var(--warn-bg);border:1px solid var(--warn-line);padding:3px 10px;text-transform:uppercase;letter-spacing:.04em}
-#answer-text{font-size:16px;line-height:1.65;color:var(--ink)}
+.ret-block{margin-bottom:16px;padding:18px;border:1px solid var(--rule);border-left:4px solid var(--iqvia-blue);background:#fff;display:none}
+.ret-block.show{display:block}
+.ret-block .rh{font-size:12px;font-weight:700;color:var(--mute);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.ret-score{font-family:"Source Code Pro",monospace;font-weight:600;color:var(--iqvia-blue)}
 
-.claims{margin-top:16px;display:flex;flex-direction:column;gap:8px}
-.claim{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:4px;font-size:14px;border:1px solid var(--rule);opacity:0;transform:translateX(-12px);transition:.4s}
-.claim.show{opacity:1;transform:none}
-.claim.supported{background:var(--ok-bg);border-color:var(--ok-line);border-left-width:4px}
-.claim.unsupported{background:var(--bad-bg);border-color:var(--bad-line);border-left-width:4px;animation:shake .45s ease}
-.claim-tag{font-size:10px;font-weight:700;text-transform:uppercase;padding:4px 10px;border-radius:3px;flex-shrink:0;letter-spacing:.04em}
-.claim.supported .claim-tag{background:var(--ok);color:#fff}
-.claim.unsupported .claim-tag{background:var(--bad);color:#fff}
+.answer-panel{padding:20px;border:1px solid var(--rule);background:#fafbfc;margin-bottom:16px}
+.answer-panel .ah{font-size:12px;font-weight:700;text-transform:uppercase;color:var(--mute);margin-bottom:10px}
+.answer-panel .draft-badge{font-size:10px;background:var(--warn-bg);color:var(--warn);border:1px solid #e8c878;padding:2px 8px;margin-left:8px;font-weight:700}
+#answer-text{font-size:17px;line-height:1.6;color:var(--ink)}
 
-.json-panel{margin-top:18px;border:1px solid #2d3748;border-radius:4px;overflow:hidden;display:none}
-.json-panel.show{display:block;animation:glowonce 1s ease-out}
-.json-hd{background:#1a2332;padding:12px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #2d3748}
-.json-hd span{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8}
-.json-hd code{font-size:11px;color:#64748b;font-family:"IBM Plex Mono",monospace}
-.json-out{font-family:"IBM Plex Mono",monospace;font-size:13px;line-height:1.7;background:#0d1117;color:#e6edf3;padding:20px 22px;max-height:220px;overflow:auto;white-space:pre-wrap;margin:0}
-.json-out .jk{color:#79c0ff}.json-out .js{color:#a5d6ff}.json-out .jn{color:#ffa657}.json-out .jb{color:#ff7b72}.json-out .jl{color:#8b949e}
+.claim{margin:10px 0;padding:16px;border:1px solid var(--rule);display:flex;gap:14px;align-items:flex-start;opacity:0;transform:translateY(8px);transition:.4s}
+.claim.vis{opacity:1;transform:none}
+.claim.ok{background:var(--ok-bg);border-left:4px solid var(--iqvia-green)}
+.claim.bad{background:var(--bad-bg);border-left:4px solid var(--bad);animation:shake .4s ease}
+.claim-st{font-size:11px;font-weight:700;text-transform:uppercase;padding:4px 10px;border-radius:2px;flex-shrink:0}
+.claim.ok .claim-st{background:var(--iqvia-green);color:#fff}
+.claim.bad .claim-st{background:var(--bad);color:#fff}
+.claim-body{font-size:15px;flex:1}
+.claim-cite{font-size:12px;font-family:"Source Code Pro",monospace;color:var(--mute);margin-top:6px}
 
-.gate-box{padding:20px 22px;background:var(--warn-bg);border:2px solid var(--warn-line);border-radius:4px;margin-bottom:16px;display:none}
-.gate-box.show{display:block;animation:pulseWarn 1.2s ease 2}
-.gate-box.blocked{background:var(--bad-bg);border-color:var(--bad-line)}
-.gate-box h4{font-size:17px;font-weight:700;color:#92400e;margin-bottom:8px}
-.gate-box.blocked h4{color:#991b1b}
-.gate-box p{font-size:15px;color:#475569;line-height:1.55}
+.gate-panel{padding:20px;background:var(--bad-bg);border:2px solid var(--bad);margin-bottom:16px;display:none}
+.gate-panel.show{display:block;animation:pulseRed 1.5s ease 2}
+.gate-panel h4{font-size:18px;font-weight:700;color:var(--bad);margin-bottom:8px}
+.gate-panel p{font-size:15px;color:#5c2030;line-height:1.5}
 
-.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
-.btn{font-family:inherit;font-size:14px;font-weight:600;padding:12px 20px;border-radius:4px;border:1px solid var(--rule);background:var(--card);cursor:pointer;color:var(--ink)}
-.btn-primary{background:var(--navy);color:#fff;border-color:var(--navy)}
-.btn-primary:hover{background:#1a3a6e}
+.json-wrap{border:1px solid #1a2b3c;margin-bottom:16px;display:none}
+.json-wrap.show{display:block}
+.json-head{background:#1a2b3c;color:#fff;padding:12px 18px;font-size:13px;font-weight:600;display:flex;justify-content:space-between}
+.json-body{font-family:"Source Code Pro",monospace;font-size:14px;line-height:1.65;padding:20px;background:#0d1520;color:#e8edf4;max-height:240px;overflow:auto;white-space:pre-wrap}
+.jk{color:#79c0ff}.js{color:#a5d6ff}.jn{color:#ffa657}.jb{color:#ff7b72}.jl{color:#8b949e}
 
-.perm-ladder{display:flex;flex-direction:column;gap:10px}
-.perm-row{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:4px;font-size:14px;border:1px solid var(--rule);transition:.3s;line-height:1.4}
-.perm-row.lit{transform:scale(1.03);box-shadow:0 6px 20px rgba(0,0,0,.1);border-width:2px}
-.perm-row.auto{background:var(--ok-bg);border-color:var(--ok-line)}
-.perm-row.ask{background:var(--warn-bg);border-color:var(--warn-line)}
-.perm-row.never{background:var(--bad-bg);border-color:var(--bad-line)}
-.perm-tag{font-size:10px;font-weight:700;padding:4px 10px;border-radius:3px;flex-shrink:0;letter-spacing:.05em}
-.perm-row.auto .perm-tag{background:var(--ok);color:#fff}
-.perm-row.ask .perm-tag{background:var(--warn);color:#fff}
-.perm-row.never .perm-tag{background:var(--bad);color:#fff}
+.actions{display:flex;flex-wrap:wrap;gap:10px}
+.btn{font-family:inherit;font-size:14px;font-weight:600;padding:12px 22px;border:1px solid var(--rule);background:#fff;cursor:pointer}
+.btn-go{background:var(--iqvia-green);color:#fff;border-color:var(--iqvia-green)}
 
-.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
-.chart-box{background:#fafbfc;border:1px solid var(--rule);border-radius:4px;padding:16px;text-align:center}
-.chart-box .cl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--mute);margin-bottom:10px}
-.chart-box .cp{font-size:28px;font-weight:700;font-family:"IBM Plex Mono",monospace;color:var(--ink);margin-top:6px}
-.chart-box .cp.ok{color:var(--ok)} .chart-box .cp.bad{color:var(--bad)}
-.chart-svg{width:90px;height:90px;margin:0 auto;display:block}
-.chart-bar-wrap{margin-top:12px}
-.claim-bars{display:flex;height:28px;border-radius:4px;overflow:hidden;margin-top:10px}
-.claim-bars .seg{transition:width .8s ease;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
+/* RIGHT — charts & golden gradual */
+.chart-panel{padding:18px;border:1px solid var(--rule);margin-bottom:16px;background:#fafbfc}
+.chart-panel h4{font-size:12px;font-weight:700;text-transform:uppercase;color:var(--mute);margin-bottom:14px}
+.big-bar{height:32px;border-radius:2px;background:#dde4ec;overflow:hidden;display:flex;margin-bottom:8px}
+.big-bar .seg{height:100%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;transition:width 1s ease}
+.spark-row{display:flex;align-items:flex-end;gap:6px;height:64px;margin-top:12px}
+.spark-col{flex:1;background:var(--rule);border-radius:2px 2px 0 0;transition:height .6s ease,min-height .6s}
+.spark-col.lit{background:linear-gradient(180deg,var(--iqvia-green),#008743)}
 
-.eval-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
-.eval-table th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--mute);padding:10px 10px;border-bottom:2px solid var(--rule)}
-.eval-table td{padding:10px;border-bottom:1px solid #f1f5f9}
-.eval-table .pass{color:var(--ok);font-weight:700;font-size:14px}
-.eval-table .fail{color:var(--bad);font-weight:700}
-.eval-table .pending{color:var(--mute)}
-.eval-table tr.flash{background:var(--ok-bg)}
+.golden-master{margin-bottom:16px}
+.golden-master .gm-label{display:flex;justify-content:space-between;font-size:13px;font-weight:600;margin-bottom:8px}
+.golden-master .gm-bar{height:20px;background:#dde4ec;border-radius:2px;overflow:hidden}
+.golden-master .gm-fill{height:100%;width:0;background:linear-gradient(90deg,var(--bad),var(--warn) 50%,var(--iqvia-green));transition:width .5s ease}
 
-.audit{font-family:"IBM Plex Mono",monospace;font-size:12px;background:#0d1117;color:#8b949e;padding:16px;border-radius:4px;max-height:200px;overflow-y:auto;line-height:1.7;border:1px solid #2d3748}
-.audit .ev{color:#cbd5e1}.audit .ok{color:#3fb950}.audit .bad{color:#f85149}.audit .warn{color:#d29922}
+.gold-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--rule);font-size:14px}
+.gold-row .gn{flex:1;font-weight:500}
+.gold-row .gs{font-size:12px;font-weight:700;padding:4px 12px;border-radius:2px;min-width:72px;text-align:center}
+.gs.pending{background:#eef1f5;color:var(--mute)}
+.gs.running{background:var(--running-bg);color:var(--running);animation:blink 1s infinite}
+.gs.pass{background:var(--ok-bg);color:var(--ok)}
+.gs.fail{background:var(--bad-bg);color:var(--bad)}
 
-.principle-band{background:var(--navy);color:#fff;border-radius:4px;padding:22px 28px;margin:18px 0;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;box-shadow:0 8px 28px rgba(15,35,71,.2)}
-.principle-band q{font-size:19px;font-weight:600;font-style:italic;display:block;max-width:720px;line-height:1.45}
-.principle-band .pbadge{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;background:rgba(255,255,255,.1);padding:10px 18px;border-radius:4px;white-space:nowrap}
+.perm-table{width:100%;border-collapse:collapse;font-size:14px;margin-bottom:16px}
+.perm-table th{text-align:left;font-size:11px;text-transform:uppercase;color:var(--mute);padding:10px;border-bottom:2px solid var(--rule)}
+.perm-table td{padding:12px 10px;border-bottom:1px solid #eef1f5}
+.perm-badge{font-size:10px;font-weight:700;padding:4px 10px;border-radius:2px;color:#fff}
+.perm-badge.auto{background:var(--iqvia-green)}.perm-badge.ask{background:var(--warn)}.perm-badge.never{background:var(--bad)}
+.perm-table tr.lit{background:var(--ok-bg);outline:2px solid var(--iqvia-green)}
 
-.disclaimer{font-size:13px;color:var(--mute);margin-top:20px;padding:16px 20px;background:var(--card);border:1px solid var(--rule);border-radius:4px;line-height:1.55}
-footer{text-align:center;margin-top:28px;font-size:13px;color:var(--mute)}
-footer a{color:var(--accent)}
+.audit{font-family:"Source Code Pro",monospace;font-size:12px;background:#0d1520;color:#8b949e;padding:16px;max-height:180px;overflow-y:auto;line-height:1.7;border:1px solid #1a2b3c}
+.audit .ok{color:#3fb950}.audit .bad{color:#f85149}.audit .warn{color:#d29922}
 
-.modal-ov{position:fixed;inset:0;background:rgba(10,22,40,.6);display:none;align-items:center;justify-content:center;padding:20px;z-index:70;backdrop-filter:blur(3px)}
-.modal-ov.open{display:flex}
-.modal{background:var(--card);border-radius:4px;max-width:520px;width:100%;padding:28px;box-shadow:0 24px 60px rgba(0,0,0,.2)}
-.modal h3{font-size:20px;color:var(--ink);margin-bottom:10px}
-.modal-ft{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}
+.disclaimer{font-size:14px;color:var(--mute);padding:18px;border:1px solid var(--rule);background:var(--card);margin-top:24px;line-height:1.55}
+footer{text-align:center;margin-top:24px;font-size:14px;color:var(--mute)}
+footer a{color:var(--iqvia-blue)}
 
-@keyframes glowblue{0%,100%{box-shadow:0 0 0 0 rgba(30,79,216,.2)}50%{box-shadow:0 0 0 6px rgba(30,79,216,.3),0 10px 32px rgba(30,79,216,.2)}}
-@keyframes glowonce{0%{box-shadow:0 0 0 0 rgba(30,79,216,0)}40%{box-shadow:0 0 0 5px rgba(30,79,216,.25)}100%{box-shadow:0 0 0 0 rgba(30,79,216,0)}}
-@keyframes pulseWarn{0%,100%{box-shadow:0 0 0 0 rgba(180,83,9,.2)}50%{box-shadow:0 0 0 8px rgba(180,83,9,.15)}}
-@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
-@keyframes ring{0%,100%{opacity:1}50%{opacity:.4}}
-@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
-body.dim .panel:not(.spot.on),body.dim .flowcard:not(.spot.on){opacity:.4;filter:grayscale(.2)}
-body.dim .kpi-row{opacity:.5}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+@keyframes pulseRed{0%,100%{box-shadow:0 0 0 0 rgba(196,30,58,0)}50%{box-shadow:0 0 0 8px rgba(196,30,58,.15)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.6}}
+body.dim .panel:not(.spot.on),body.dim .gov-section{opacity:.45}
 </style>
 </head>
 <body>
 
 <div class="intro-ov" id="introOv">
   <div class="intro">
-    <div class="intro-top"></div>
-    <div class="intro-body">
-      <button class="skip" id="introSkip">Skip intro</button>
-
-      <div class="introscreen" id="introS1">
-        <div class="intro-progress"><span class="on"></span><span></span><span></span><span></span></div>
-        <div class="intro-split">
-          <div>
-            <div class="ik">Work sample · 1 of 4</div>
-            <h3>Clinical RAG Evaluation Console</h3>
-            <p class="obj">Interactive demo for <b>Applied AI Science</b> in life sciences. A clinician asks about a trial protocol — the system retrieves documents, generates an answer, and <b>validates every claim</b> before release. All data is fictional.</p>
-          </div>
-          <div class="intro-visual" id="introViz">
-            <div class="iv-row lit"><span class="iv-dot"></span> Retrieve from protocol corpus</div>
-            <div class="iv-row"><span class="iv-dot"></span> Generate draft answer</div>
-            <div class="iv-row"><span class="iv-dot"></span> Validate each claim</div>
-            <div class="iv-row"><span class="iv-dot"></span> Block hallucinations</div>
-            <div class="iv-row"><span class="iv-dot"></span> Human approves</div>
-          </div>
-        </div>
-        <div class="intro-pillars">
-          <div class="pillar"><div class="pl">Layer 1</div><div class="pt">Grounded RAG</div><div class="pd">Every answer tied to retrieved source passages with similarity scores.</div></div>
-          <div class="pillar"><div class="pl">Layer 2</div><div class="pt">Eval harness</div><div class="pd">hit@k, groundedness %, golden tests — metrics visible before release.</div></div>
-          <div class="pillar"><div class="pl">Layer 3</div><div class="pt">Governance</div><div class="pd">Never / Ask / Auto policy enforced in code, not in prompts.</div></div>
+    <button class="skip" id="introSkip">Skip</button>
+    <div id="introSlides">
+      <div class="intro-slide" data-i="1">
+        <div class="intro-kicker">Applied AI Science · Work sample</div>
+        <h2>Clinical RAG with evaluation gates &amp; governance</h2>
+        <p class="intro-lead">A regulated-life-sciences pattern: retrieve from protocol corpus, generate an answer, validate <strong>every claim</strong> against source, enforce Never/Ask/Auto policy, human sign-off. Fictional trial data.</p>
+        <div class="intro-flow" id="introFlow">
+          <span class="if-step on">Retrieve</span><span class="if-arr">→</span>
+          <span class="if-step">Ground</span><span class="if-arr">→</span>
+          <span class="if-step">Eval gate</span><span class="if-arr">→</span>
+          <span class="if-step">Human review</span><span class="if-arr">→</span>
+          <span class="if-step">Audit</span>
         </div>
       </div>
-
-      <div class="introscreen" id="introS2" style="display:none">
-        <div class="intro-progress"><span class="on"></span><span class="on"></span><span></span><span></span></div>
-        <div class="ik">Core principle · 2 of 4</div>
-        <div class="intro-quote">
-          <p>I treat AI outputs as hypotheses to validate — not results to trust.</p>
-          <span>The model proposes · the evaluation gate decides · the qualified reviewer approves</span>
-        </div>
-        <p class="obj">Production patterns from regulated healthcare AI: evaluation gates before release, claim-level grounding checks, structured JSON agent output, and append-only audit trails. Nothing ships on model confidence alone.</p>
+      <div class="intro-slide" data-i="2" style="display:none">
+        <div class="intro-kicker">Design principle</div>
+        <p class="intro-quote">I treat AI outputs as hypotheses to validate — not results to trust.</p>
+        <p class="intro-lead">The model proposes. The grounding engine and evaluation harness decide. A qualified reviewer approves. Styled after enterprise life-sciences UI patterns (IQVIA Apollo: blue surfaces, green accents, gauge-style metrics).</p>
       </div>
-
-      <div class="introscreen" id="introS3" style="display:none">
-        <div class="intro-progress"><span class="on"></span><span class="on"></span><span class="on"></span><span></span></div>
-        <div class="ik">What you'll see · 3 of 4</div>
-        <h3>Four things this console demonstrates</h3>
-        <div class="introfeat">
-          <div class="ifeat"><div class="r">Live pipeline diagram</div><div class="d">Six stages light up in sequence — query through human review — with real-time status labels.</div></div>
-          <div class="ifeat"><div class="r">Hallucination trap (Q2)</div><div class="d">The model fabricates an 18.7% hospitalization rate. Grounding engine catches it and blocks release.</div></div>
-          <div class="ifeat"><div class="r">Metrics &amp; charts</div><div class="d">Groundedness %, retrieval scores, claim breakdown, golden test pass rate — all visible.</div></div>
-          <div class="ifeat"><div class="r">Structured agent output</div><div class="d">Pydantic-style JSON with confidence, hallucination flags, and schema validation.</div></div>
-        </div>
-      </div>
-
-      <div class="introscreen" id="introS4" style="display:none">
-        <div class="intro-progress"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></div>
-        <div class="ik">Ready · 4 of 4</div>
-        <h3>How to explore</h3>
-        <ol>
-          <li><b>Play the scenario</b> — 90-second guided walkthrough. Pipeline, panels, and charts animate automatically.</li>
-          <li><b>Try question #2</b> — the eval trap. Watch groundedness drop to 50% and the gate block the answer.</li>
-          <li><b>Inspect metrics</b> — donut charts and claim bars update live with each query.</li>
-          <li><b>Run golden tests</b> — 5 regression tests that must pass before any model update ships.</li>
-        </ol>
+      <div class="intro-slide" data-i="3" style="display:none">
+        <div class="intro-kicker">How to explore</div>
+        <p class="intro-lead" style="margin-bottom:0"><strong>Play the scenario</strong> — 90s walkthrough.<br><strong>Question #2</strong> — eval trap: model fabricates 18.7% hospitalization (not in source). Watch groundedness fall and gate block.<br><strong>Citation format</strong> — switch Vancouver / AMA / APA / ICMJE on retrieved sources.<br><strong>Golden tests</strong> — run gradually: pending → running → pass, with gradient progress bar.</p>
       </div>
     </div>
-
-    <div class="intronav" id="intronav">
-      <button class="backbtn" id="introBack" style="visibility:hidden">← Back</button>
-      <button class="startbtn" id="introNext">Next: core principle →</button>
+    <div class="intro-nav">
+      <button class="btn-back-intro intro-nav" id="introBack" style="display:none">Back</button>
+      <button class="btn-enter intro-nav" id="introNext">Continue</button>
+      <div class="intro-dots"><i class="on"></i><i></i><i></i></div>
     </div>
   </div>
 </div>
 
-<div class="intro-ov hide" id="howtoOv">
-  <div class="intro">
-    <div class="intro-top"></div>
-    <div class="intro-body">
-      <button class="skip" id="howtoSkip">Close</button>
-      <div class="ik">How to use</div>
-      <h3>Four panels to explore</h3>
-      <ol>
-        <li><b>Play the scenario</b> — top toolbar. Full walkthrough with narration, spotlight effects, and live charts.</li>
-        <li><b>Panel 1 — Questions</b> — pick a clinical query. #2 is the hallucination trap.</li>
-        <li><b>Panel 2 — Pipeline</b> — retrieval scores, claims, structured JSON, evaluation gate, approve/reject.</li>
-        <li><b>Panel 3 — Metrics</b> — donut charts, claim breakdown, golden tests, audit log.</li>
-      </ol>
-    </div>
-    <div class="intronav"><span></span><button class="startbtn" id="howtoClose">Enter console →</button></div>
-  </div>
-</div>
-
+<div class="topstripe"></div>
 <div class="wrap">
 
 <header class="appbar">
-  <div class="brand">
-    <span class="logo">RAG</span>
-    <div>
-      <div class="appname">Clinical RAG Evaluation Console <span class="proto">work sample</span></div>
-      <div class="appdesc">Grounded retrieval · claim-level validation · Never/Ask/Auto governance · evaluation harness · fictional protocol data</div>
-    </div>
-  </div>
-  <div class="kpi-row">
-    <div class="kpi"><svg class="kpi-chart" id="chart-hit" viewBox="0 0 52 52"></svg><div class="kpi-data"><div class="kl">Retrieval hit@3</div><div class="kv" id="stat-hit">—</div></div></div>
-    <div class="kpi"><svg class="kpi-chart" id="chart-ground" viewBox="0 0 52 52"></svg><div class="kpi-data"><div class="kl">Groundedness</div><div class="kv" id="stat-ground">—</div></div></div>
-    <div class="kpi"><svg class="kpi-chart" id="chart-caught" viewBox="0 0 52 52"></svg><div class="kpi-data"><div class="kl">Hallucinations caught</div><div class="kv warn" id="stat-caught">—</div></div></div>
-    <div class="kpi"><svg class="kpi-chart" id="chart-gold" viewBox="0 0 52 52"></svg><div class="kpi-data"><div class="kl">Golden tests</div><div class="kv" id="stat-gold">—</div></div></div>
+  <div class="brand-block">
+    <h1>Clinical RAG Evaluation Console</h1>
+    <p class="tagline">Grounded retrieval · claim validation · governance · eval harness · fictional Phase III protocol corpus</p>
+    <span class="worksample">AI work sample · Ainoa Figueroa Vidal</span>
   </div>
 </header>
-<div class="subbar"><span>Fictional life-sciences data · IQVIA Applied AI Science (R1540735)</span><span>Ainoa Figueroa Vidal</span></div>
+
+<!-- GOVERNANCE ARCHITECTURE DIAGRAM -->
+<section class="gov-section spot" id="spot-gov">
+  <h2>Governance &amp; validation architecture</h2>
+  <div class="gov-svg">
+    <svg viewBox="0 0 920 200" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#002B5C"/></marker>
+        <linearGradient id="gGrad" x1="0%" y1="0%" x2="100%"><stop offset="0%" stop-color="#c41e3a"/><stop offset="50%" stop-color="#c47f00"/><stop offset="100%" stop-color="#00A651"/></linearGradient>
+      </defs>
+      <rect x="10" y="70" width="100" height="56" rx="2" fill="#002B5C"/><text x="60" y="95" text-anchor="middle" fill="#fff" font-size="12" font-weight="600" font-family="Source Sans 3,sans-serif">Clinical</text><text x="60" y="112" text-anchor="middle" fill="#fff" font-size="12" font-weight="600" font-family="Source Sans 3,sans-serif">Query</text>
+      <line x1="110" y1="98" x2="140" y2="98" stroke="#002B5C" stroke-width="2" marker-end="url(#arr)"/>
+      <rect x="140" y="70" width="100" height="56" rx="2" fill="#e8f0fe" stroke="#002B5C" stroke-width="2"/><text x="190" y="104" text-anchor="middle" fill="#002B5C" font-size="13" font-weight="600" font-family="Source Sans 3,sans-serif">RAG Retrieve</text>
+      <line x1="240" y1="98" x2="270" y2="98" stroke="#002B5C" stroke-width="2" marker-end="url(#arr)"/>
+      <rect x="270" y="70" width="100" height="56" rx="2" fill="#e8f0fe" stroke="#002B5C" stroke-width="2"/><text x="320" y="104" text-anchor="middle" fill="#002B5C" font-size="13" font-weight="600" font-family="Source Sans 3,sans-serif">LLM Draft</text>
+      <line x1="370" y1="98" x2="400" y2="98" stroke="#002B5C" stroke-width="2" marker-end="url(#arr)"/>
+      <rect id="svg-ground" x="400" y="70" width="110" height="56" rx="2" fill="#fff" stroke="#c5d0de" stroke-width="2"/><text x="455" y="104" text-anchor="middle" fill="#002B5C" font-size="12" font-weight="600" font-family="Source Sans 3,sans-serif">Grounding Engine</text>
+      <line x1="510" y1="98" x2="540" y2="98" stroke="#002B5C" stroke-width="2" marker-end="url(#arr)"/>
+      <rect id="svg-gate" x="540" y="70" width="100" height="56" rx="2" fill="#fff" stroke="#c5d0de" stroke-width="2"/><text x="590" y="95" text-anchor="middle" fill="#002B5C" font-size="12" font-weight="600" font-family="Source Sans 3,sans-serif">Eval Gate</text><text x="590" y="112" text-anchor="middle" fill="#5a6d82" font-size="10" font-family="Source Sans 3,sans-serif">≥80% + policy</text>
+      <line x1="640" y1="98" x2="670" y2="98" stroke="#002B5C" stroke-width="2" marker-end="url(#arr)"/>
+      <rect id="svg-human" x="670" y="70" width="110" height="56" rx="2" fill="#fff" stroke="#c5d0de" stroke-width="2"/><text x="725" y="104" text-anchor="middle" fill="#002B5C" font-size="12" font-weight="600" font-family="Source Sans 3,sans-serif">Human Review</text>
+      <line x1="780" y1="98" x2="810" y2="98" stroke="#002B5C" stroke-width="2" marker-end="url(#arr)"/>
+      <rect x="810" y="70" width="100" height="56" rx="2" fill="#002B5C"/><text x="860" y="104" text-anchor="middle" fill="#fff" font-size="12" font-weight="600" font-family="Source Sans 3,sans-serif">Audit Log</text>
+      <!-- Block path -->
+      <path id="svg-block" d="M 590 126 L 590 160 L 455 160 L 455 126" fill="none" stroke="#c41e3a" stroke-width="2" stroke-dasharray="4 3" opacity="0"/>
+      <rect x="400" y="164" width="190" height="28" rx="2" fill="#fde8ec" stroke="#c41e3a" id="svg-block-label" opacity="0"/>
+      <text x="495" y="182" text-anchor="middle" fill="#c41e3a" font-size="11" font-weight="700" font-family="Source Sans 3,sans-serif" id="svg-block-text" opacity="0">BLOCK — hallucination / unsupported claim</text>
+      <!-- Policy branch -->
+      <rect x="540" y="20" width="220" height="36" rx="2" fill="#e6f5ec" stroke="#00A651" stroke-width="1.5"/>
+      <text x="650" y="43" text-anchor="middle" fill="#002B5C" font-size="11" font-weight="600" font-family="Source Sans 3,sans-serif">Never / Ask / Auto — enforced in code</text>
+      <line x1="590" y1="56" x2="590" y2="70" stroke="#00A651" stroke-width="1.5"/>
+    </svg>
+  </div>
+  <div class="gov-legend">
+    <span><span class="gl" style="background:#002B5C"></span> System boundary</span>
+    <span><span class="gl" style="background:#00A651"></span> Pass / AUTO</span>
+    <span><span class="gl" style="background:#c47f00"></span> ASK — human queue</span>
+    <span><span class="gl" style="background:#c41e3a"></span> BLOCK — fail-closed</span>
+  </div>
+</section>
+
+<!-- LIVE METRICS STRIP -->
+<div class="metrics-strip">
+  <div class="metric-card"><div class="ml">Retrieval hit@3</div><div class="mv" id="stat-hit">—</div><div class="grad-bar"><div class="grad-fill" id="bar-hit"></div></div></div>
+  <div class="metric-card"><div class="ml">Groundedness</div><div class="mv" id="stat-ground">—</div><div class="grad-bar"><div class="grad-fill" id="bar-ground"></div><div class="grad-threshold"></div></div></div>
+  <div class="metric-card"><div class="ml">Hallucinations caught</div><div class="mv warn" id="stat-caught">—</div><div class="grad-bar"><div class="grad-fill" id="bar-caught" style="background:linear-gradient(90deg,#dde4ec,var(--bad))"></div></div></div>
+  <div class="metric-card"><div class="ml">Golden tests</div><div class="mv" id="stat-gold">0/5</div><div class="grad-bar"><div class="grad-fill" id="bar-gold"></div></div></div>
+</div>
 
 <div class="toolbar">
-  <div class="tour">
-    <span class="starthere">Start here</span>
-    <button class="play" id="btn-play"><span>▶</span> Play the scenario</button>
-    <span class="tourhint">90-second walkthrough with live metrics, charts, and pipeline spotlight. Try <b>question #2</b> for the hallucination block.</span>
-  </div>
+  <button class="play" id="btn-play">▶ Play the scenario</button>
+  <span class="hint">Walkthrough: dose query → <strong>Q2 eval trap</strong> (18.7% fabricated) → clean SOP → golden tests with gradual pass bar</span>
   <button class="howto" id="btn-howto">How to use</button>
 </div>
 
-<div class="narr" id="narr"><span class="act" id="narr-act">Scene</span><span class="ntext" id="narr-text"></span></div>
+<div class="narr" id="narr"><span class="narr-tag" id="narr-act">Scene</span><span id="narr-text"></span></div>
 
-<div class="principle-band">
-  <q>"I treat AI outputs as hypotheses to validate — not results to trust."</q>
-  <span class="pbadge">Model proposes · Gate decides · Human approves</span>
-</div>
-
-<div class="sectionhd"><span class="snum">01</span><div><h3>Live RAG pipeline<div class="sdesc">Blue = active stage · Green = passed · Red = blocked by evaluation gate</div></h3></div></div>
-
-<div class="flowcard spot" id="spot-flow">
-  <div class="flowrow">
-    <div class="fnode" data-f="query"><div class="fn">💬</div><div class="fl">Query</div><div class="fs" id="fs-query"></div></div>
-    <div class="farrow">→</div>
-    <div class="fnode" data-f="retrieve"><div class="fn">🔍</div><div class="fl">Retrieve</div><div class="fs" id="fs-retrieve"></div></div>
-    <div class="farrow">→</div>
-    <div class="fnode" data-f="generate"><div class="fn">✨</div><div class="fl">Generate</div><div class="fs" id="fs-generate"></div></div>
-    <div class="farrow">→</div>
-    <div class="fnode" data-f="ground"><div class="fn">✓</div><div class="fl">Ground check</div><div class="fs" id="fs-ground"></div></div>
-    <div class="farrow">→</div>
-    <div class="fnode" data-f="policy"><div class="fn">🛡</div><div class="fl">Policy gate</div><div class="fs" id="fs-policy"></div></div>
-    <div class="farrow">→</div>
-    <div class="fnode" data-f="human"><div class="fn">👤</div><div class="fl">Human review</div><div class="fs" id="fs-human"></div></div>
-  </div>
-  <p class="flowcap"><b>Pass path:</b> all claims grounded → queued for human approval. <b>Block path:</b> unsupported claim or numeric hallucination → stopped automatically, never reaches clinical systems.</p>
-</div>
-
-<div class="sectionhd"><span class="snum">02</span><div><h3>Interactive console<div class="sdesc">Pick a question · follow the pipeline · inspect claims, JSON output, and live metrics</div></h3></div></div>
-
-<div class="grid">
+<div class="layout">
+  <!-- LEFT: Protocol corpus -->
   <aside class="panel spot" id="spot-left">
-    <div class="panel-hd"><span class="pn">1</span><span class="pt">Source corpus &amp; questions</span></div>
-    <div class="panel-bd">
-      <div class="lbl">Fictional documents</div>
-      <ul class="doc-list" id="doc-list"></ul>
-      <div class="lbl" style="margin-top:20px">Sample questions</div>
-      <div class="q-grid" id="q-grid"></div>
+    <div class="panel-head">Source corpus · citation format</div>
+    <div class="cite-bar">
+      <label for="cite-fmt">Citation style</label>
+      <select id="cite-fmt">
+        <option value="vancouver">Vancouver (ICMJE)</option>
+        <option value="ama">AMA</option>
+        <option value="apa">APA 7th</option>
+        <option value="icmje">ICMJE structured</option>
+      </select>
     </div>
+    <div class="doc-tabs" id="doc-tabs"></div>
+    <div class="protocol-doc" id="protocol-view"></div>
+    <div class="cite-out" id="cite-out"></div>
+    <div class="q-list" id="q-list"></div>
   </aside>
 
+  <!-- CENTER: Pipeline -->
   <main class="panel spot" id="spot-main">
-    <div class="panel-hd"><span class="pn">2</span><span class="pt">RAG pipeline · structured output</span></div>
-    <div class="panel-bd">
-      <div class="steps">
-        <div class="step s-retrieve" data-s="retrieve"><div class="stitle"><span class="num">1</span> Retrieve relevant passages</div><div class="body" id="step-retrieve">Waiting for query…</div></div>
-        <div class="step s-generate" data-s="generate"><div class="stitle"><span class="num">2</span> Generate draft answer</div><div class="body" id="step-generate">—</div></div>
-        <div class="step s-ground" data-s="ground"><div class="stitle"><span class="num">3</span> Claim-level grounding check</div><div class="body" id="step-ground">Each claim validated against source document</div></div>
-        <div class="step s-policy" data-s="policy"><div class="stitle"><span class="num">4</span> Evaluation &amp; policy gate</div><div class="body" id="step-policy">Groundedness threshold + Never/Ask/Auto rules</div></div>
-        <div class="step s-human" data-s="human"><div class="stitle"><span class="num">5</span> Human-in-the-loop review</div><div class="body" id="step-human">Approve · edit · or reject before clinical use</div></div>
+    <div class="panel-head">RAG pipeline · structured output</div>
+    <div style="padding:20px">
+      <div class="ps" id="ps">
+        <div class="ps-item" data-p="retrieve"><div class="ps-n">①</div><div class="ps-l">Retrieve</div><div class="ps-s" id="ps-retrieve"></div></div>
+        <div class="ps-item" data-p="generate"><div class="ps-n">②</div><div class="ps-l">Generate</div><div class="ps-s" id="ps-generate"></div></div>
+        <div class="ps-item" data-p="ground"><div class="ps-n">③</div><div class="ps-l">Ground</div><div class="ps-s" id="ps-ground"></div></div>
+        <div class="ps-item" data-p="policy"><div class="ps-n">④</div><div class="ps-l">Eval gate</div><div class="ps-s" id="ps-policy"></div></div>
+        <div class="ps-item" data-p="human"><div class="ps-n">⑤</div><div class="ps-l">Human</div><div class="ps-s" id="ps-human"></div></div>
       </div>
-      <div id="retrieval"></div>
-      <div class="answer-box">
-        <h4>Model answer <span class="untrusted">draft — not approved</span></h4>
-        <p id="answer-text" style="color:var(--mute)">Select a question or press Play the scenario.</p>
-        <div class="claims" id="claims"></div>
+      <div class="ret-block" id="ret-block"></div>
+      <div class="answer-panel">
+        <div class="ah">Model answer <span class="draft-badge">DRAFT · NOT APPROVED</span></div>
+        <p id="answer-text" style="color:var(--mute)">Select a question or play the scenario.</p>
+        <div id="claims"></div>
       </div>
-      <div class="json-panel" id="json-panel">
-        <div class="json-hd"><span>Structured agent output</span><code>Pydantic · JSON schema</code></div>
-        <pre class="json-out" id="json-out"></pre>
+      <div class="json-wrap" id="json-wrap">
+        <div class="json-head"><span>Agent output · Pydantic schema</span><span id="json-conf"></span></div>
+        <pre class="json-body" id="json-out"></pre>
       </div>
-      <div class="gate-box" id="gate-box">
+      <div class="gate-panel" id="gate-panel">
         <h4 id="gate-title">Evaluation gate: BLOCKED</h4>
         <p id="gate-reason"></p>
       </div>
       <div class="actions" id="actions" style="display:none">
-        <button class="btn btn-primary" id="btn-approve" type="button">Approve for clinical use</button>
-        <button class="btn" id="btn-edit" type="button">Edit draft</button>
-        <button class="btn" id="btn-reject" type="button">Reject · regenerate</button>
+        <button class="btn btn-go" id="btn-approve">Approve for clinical use</button>
+        <button class="btn" id="btn-edit">Edit draft</button>
+        <button class="btn" id="btn-reject">Reject · regenerate</button>
       </div>
     </div>
   </main>
 
+  <!-- RIGHT: Metrics detail -->
   <aside class="panel spot" id="spot-right">
-    <div class="panel-hd"><span class="pn">3</span><span class="pt">Metrics · governance · audit</span></div>
-    <div class="panel-bd">
-      <div class="lbl">Live metrics</div>
-      <div class="charts-grid">
-        <div class="chart-box"><div class="cl">Groundedness</div><svg class="chart-svg" id="donut-ground" viewBox="0 0 100 100"></svg><div class="cp" id="cp-ground">—</div></div>
-        <div class="chart-box"><div class="cl">Retrieval score</div><svg class="chart-svg" id="donut-retrieval" viewBox="0 0 100 100"></svg><div class="cp" id="cp-retrieval">—</div></div>
-      </div>
-      <div class="chart-box" style="margin-bottom:18px">
-        <div class="cl">Claim breakdown</div>
-        <div class="claim-bars" id="claim-bars"><div class="seg" style="width:50%;background:var(--ok)">Supported</div><div class="seg" style="width:50%;background:var(--bad)">Unsupported</div></div>
-        <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:13px;font-weight:600"><span id="lbl-supported" style="color:var(--ok)">— supported</span><span id="lbl-unsupported" style="color:var(--bad)">— unsupported</span></div>
+    <div class="panel-head">Validation metrics · governance</div>
+    <div style="padding:18px">
+      <div class="chart-panel">
+        <h4>Groundedness vs release threshold (80%)</h4>
+        <div class="big-bar" id="ground-big"><div class="seg" id="g-seg-ok" style="width:0;background:var(--iqvia-green)"></div><div class="seg" id="g-seg-fail" style="width:0;background:var(--bad)"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600"><span id="g-lbl-ok" style="color:var(--ok)">— supported</span><span id="g-lbl-fail" style="color:var(--bad)">— unsupported</span></div>
+        <div class="spark-row" id="spark-row"><div class="spark-col" data-i="0"></div><div class="spark-col" data-i="1"></div><div class="spark-col" data-i="2"></div></div>
+        <div style="font-size:12px;color:var(--mute);margin-top:8px">Sparkline: per-claim validation (Q2 — claim 2 fails)</div>
       </div>
 
-      <div class="lbl">Permission policy</div>
-      <div class="perm-ladder">
-        <div class="perm-row auto" data-p="auto"><span class="perm-tag">AUTO</span> Retrieve passages · internal summarization</div>
-        <div class="perm-row ask" data-p="ask"><span class="perm-tag">ASK</span> Draft answer · save to review queue</div>
-        <div class="perm-row never" data-p="never"><span class="perm-tag">NEVER</span> Auto-publish to EHR · dosing decisions</div>
+      <table class="perm-table">
+        <thead><tr><th>Action</th><th>Policy</th></tr></thead>
+        <tbody>
+          <tr data-p="auto"><td>Retrieve · summarize internal</td><td><span class="perm-badge auto">AUTO</span></td></tr>
+          <tr data-p="ask"><td>Draft answer · review queue</td><td><span class="perm-badge ask">ASK</span></td></tr>
+          <tr data-p="never"><td>Auto-publish EHR · dosing</td><td><span class="perm-badge never">NEVER</span></td></tr>
+        </tbody>
+      </table>
+
+      <div class="golden-master">
+        <div class="gm-label"><span>Golden regression suite</span><span id="gm-pct">0%</span></div>
+        <div class="gm-bar"><div class="gm-fill" id="gm-fill"></div></div>
       </div>
+      <button class="btn btn-go" id="btn-run-gold" style="width:100%;margin-bottom:14px">Run golden tests</button>
+      <div id="gold-list"></div>
 
-      <div class="lbl" style="margin-top:20px">Golden test suite</div>
-      <button class="btn btn-primary" id="btn-run-gold" type="button" style="width:100%;margin-bottom:12px">Run golden tests (5)</button>
-      <table class="eval-table"><thead><tr><th>Test</th><th>Status</th></tr></thead><tbody id="gold-body"></tbody></table>
-
-      <div class="lbl" style="margin-top:20px">Audit log</div>
-      <div class="audit" id="audit"><span class="ev">[init]</span> Console ready · fictional data</div>
-      <button class="btn" id="btn-copy-audit" type="button" style="width:100%;margin-top:10px">Copy audit log</button>
+      <div style="margin-top:18px;font-size:12px;font-weight:700;text-transform:uppercase;color:var(--mute);margin-bottom:8px">Audit log</div>
+      <div class="audit" id="audit"><span class="ev">[init]</span> Console ready · fictional protocol data</div>
+      <button class="btn" id="btn-copy-audit" style="width:100%;margin-top:10px">Copy audit log</button>
     </div>
   </aside>
 </div>
 
-<p class="disclaimer"><strong>Fictional data only.</strong> Protocol excerpts and pharmacovigilance scenarios are invented for this work sample. Demonstrates production patterns from regulated healthcare AI.</p>
-<footer>Ainoa Figueroa Vidal · <a href="https://github.com/Ainoafv">github.com/Ainoafv</a></footer>
-</div>
-
-<div class="modal-ov" id="modal">
-  <div class="modal">
-    <h3>Human review — edit draft</h3>
-    <p style="font-size:15px;color:var(--mute);margin-bottom:14px">Simulated clinician review before any answer leaves the evaluation queue.</p>
-    <textarea id="modal-edit" style="width:100%;min-height:120px;padding:12px;border:1px solid var(--rule);border-radius:4px;font-family:inherit;font-size:15px"></textarea>
-    <div class="modal-ft">
-      <button class="btn" id="modal-cancel" type="button">Cancel</button>
-      <button class="btn btn-primary" id="modal-save" type="button">Save &amp; approve</button>
-    </div>
-  </div>
+<p class="disclaimer"><strong>Fictional data only.</strong> Protocol NX-2847 and pharmacovigilance SOP are invented for this work sample. UI palette inspired by IQVIA enterprise patterns (blue #002B5C, green #00A651). Not affiliated with IQVIA.</p>
+<footer>Ainoa Figueroa Vidal · <a href="https://github.com/Ainoafv/iqvia-clinical-rag-eval-demo">source</a></footer>
 </div>
 
 <script>
 const $ = id => document.getElementById(id);
+const CITE_FMT = $('cite-fmt');
+
 const DOCS = [
-  { id:'p1', title:'Protocol NX-2847 Phase III', meta:'Oncology · enrollment & dosing', text:'Primary endpoint: progression-free survival at 24 weeks. Key exclusion: prior PD-1 inhibitor within 12 months. Recommended starting dose: 240 mg Q2W subcutaneous. Dose modifications for Grade 3+ immune-related adverse events per appendix B.' },
-  { id:'p2', title:'Investigator Brochure §4.2', meta:'Safety · adverse events', text:'Most common TEAEs (≥15%): fatigue 22%, nausea 18%, rash 16%. Serious TEAE rate in pooled analysis: 12.4%. No treatment-related deaths in the primary cohort (n=412). Hepatic monitoring required at baseline and every 4 cycles.' },
-  { id:'p3', title:'Pharmacovigilance SOP v3.1', meta:'Internal · case processing', text:'Expedited reporting threshold: unexpected fatal outcome, life-threatening, hospitalization >24h, congenital anomaly. Standard timeline: initial report within 15 calendar days of awareness. Causality assessment requires medically qualified reviewer sign-off before regulatory submission.' }
+  { id:'p1', title:'Protocol NX-2847', version:'3.1 · Amendment 2', date:'15-Jan-2025', sponsor:'OncoPharm Therapeutics (fictional)', sections:[
+    { id:'5.2.1', head:'Section 5.2.1 — Starting dose', body:'Recommended starting dose: <mark>240 mg</mark> administered every two weeks (<mark>Q2W</mark>) via <mark>subcutaneous</mark> injection. No oral formulation is defined in this protocol.' },
+    { id:'4.1', head:'Section 4.1 — Key exclusion', body:'Prior PD-1 inhibitor therapy within 12 months prior to randomization.' },
+    { id:'1.1', head:'Section 1.1 — Primary endpoint', body:'Progression-free survival at 24 weeks from randomization.' }
+  ]},
+  { id:'p2', title:'Investigator\'s Brochure', version:'§4.2 Safety', date:'Rev 8 · Dec 2024', sponsor:'OncoPharm Therapeutics (fictional)', sections:[
+    { id:'4.2.1', head:'§4.2.1 — TEAE summary (pooled, n=412)', body:'Most common TEAEs (≥15%): fatigue 22%, nausea 18%, rash 16%. <mark>Serious TEAE rate: 12.4%</mark> in the primary cohort. No treatment-related deaths. Hepatic monitoring at baseline and every 4 cycles.' }
+  ]},
+  { id:'p3', title:'Pharmacovigilance SOP', version:'3.1', date:'Internal · Jan 2025', sponsor:'OncoPharm Therapeutics (fictional)', sections:[
+    { id:'3.4', head:'§3.4 — Expedited reporting triggers', body:'Expedited reporting required for: unexpected fatal outcome, life-threatening event, hospitalization &gt;24h, congenital anomaly. Initial report within <mark>15 calendar days</mark> of awareness. MQ reviewer sign-off required before regulatory submission.' }
+  ]}
 ];
+
 const QUESTIONS = [
-  { id:'q1', label:'Starting dose & route', text:'What is the recommended starting dose and administration route for NX-2847?', docId:'p1', trap:false },
-  { id:'q2', label:'Serious AE rate · EVAL TRAP', text:'What is the serious treatment-emergent adverse event rate in the primary cohort?', docId:'p2', trap:true },
-  { id:'q3', label:'Expedited reporting rules', text:'When is expedited pharmacovigilance reporting required?', docId:'p3', trap:false }
+  { id:'q1', label:'Starting dose & route', text:'Recommended starting dose and route for NX-2847?', docId:'p1', sec:'5.2.1', trap:false },
+  { id:'q2', label:'Serious TEAE rate · EVAL TRAP', text:'Serious TEAE rate in primary cohort (n=412)?', docId:'p2', sec:'4.2.1', trap:true },
+  { id:'q3', label:'Expedited PV reporting', text:'When is expedited pharmacovigilance reporting required?', docId:'p3', sec:'3.4', trap:false }
 ];
+
 const ANSWERS = {
-  q1:{ text:'The recommended starting dose for NX-2847 is 240 mg administered Q2W (every two weeks) subcutaneous.', claims:[{t:'240 mg starting dose',status:'supported',src:'Protocol NX-2847'},{t:'Q2W subcutaneous route',status:'supported',src:'Protocol NX-2847'},{t:'Oral formulation available',status:'unsupported',src:'— not in source'}], json:{drug:'NX-2847',dose_mg:240,route:'subcutaneous',frequency:'Q2W',confidence:0.94,grounded:false}, hit:100, retrievalScore:92, groundPct:67, caught:1, block:true, reason:'1 unsupported claim (oral formulation). Policy: ASK — human review required. EHR auto-publish: NEVER.', narr:'Dose query — two claims grounded, but the model invents an oral formulation. Gate blocks release.' },
-  q2:{ text:'The serious TEAE rate in the primary cohort was 12.4%. Hospitalization rate was 18.7%.', claims:[{t:'Serious TEAE rate 12.4%',status:'supported',src:'Investigator Brochure §4.2'},{t:'Hospitalization rate 18.7%',status:'unsupported',src:'— invented; not in source'}], json:{serious_teae_pct:12.4,hospitalization_pct:null,hallucination_flag:true,confidence:0.71,grounded:false}, hit:100, retrievalScore:92, groundPct:50, caught:1, block:true, reason:'Hallucination: 18.7% hospitalization rate NOT in source. Classic LLM numeric confabulation — blocked automatically.', narr:'Eval trap — model cites 12.4% correctly, then fabricates 18.7% hospitalization. Grounding engine catches and blocks.' },
-  q3:{ text:'Expedited reporting is required for unexpected fatal outcome, life-threatening events, hospitalization >24h, and congenital anomaly. Initial report within 15 calendar days.', claims:[{t:'Fatal / life-threatening → expedited',status:'supported',src:'Pharmacovigilance SOP'},{t:'15 calendar days initial report',status:'supported',src:'Pharmacovigilance SOP'},{t:'MQ sign-off before submission',status:'supported',src:'Pharmacovigilance SOP'}], json:{expedited_triggers:['fatal','life_threatening','hospitalization_gt_24h','congenital_anomaly'],timeline_days:15,mq_review_required:true,grounded:true}, hit:100, retrievalScore:89, groundPct:100, caught:0, block:false, reason:'', narr:'Clean pass — 100% grounded. Queued for human approval. Policy never auto-publishes.' }
+  q1:{ text:'The recommended starting dose for NX-2847 is 240 mg Q2W (every two weeks) subcutaneous.', claims:[
+    {t:'240 mg starting dose',ok:true,sec:'5.2.1'},{t:'Q2W subcutaneous route',ok:true,sec:'5.2.1'},{t:'Oral formulation available',ok:false,sec:null}
+  ], json:{drug:'NX-2847',dose_mg:240,route:'subcutaneous',frequency:'Q2W',confidence:0.94,grounded:false,hallucination_flag:false}, hit:100, groundPct:67, caught:1, block:true,
+    reason:'Unsupported claim: oral formulation not in Protocol §5.2.1. Policy ASK — routed to reviewer. EHR publish: NEVER.',
+    narr:'Dose query — retrieval hits §5.2.1. Two claims grounded; model invents oral formulation. Gate blocks.' },
+  q2:{ text:'Serious TEAE rate in the primary cohort was 12.4%. Hospitalization rate was 18.7%.', claims:[
+    {t:'Serious TEAE rate 12.4%',ok:true,sec:'4.2.1'},{t:'Hospitalization rate 18.7%',ok:false,sec:null}
+  ], json:{serious_teae_pct:12.4,hospitalization_pct:null,hallucination_flag:true,confidence:0.71,grounded:false}, hit:100, groundPct:50, caught:1, block:true,
+    reason:'Hallucination: 18.7% hospitalization NOT in Investigator\'s Brochure §4.2.1. Numeric confabulation — blocked automatically.',
+    narr:'Eval trap — 12.4% is correct (supported). 18.7% hospitalization is fabricated. Watch groundedness drop to 50% and block path activate.' },
+  q3:{ text:'Expedited reporting: fatal outcome, life-threatening, hospitalization >24h, congenital anomaly. Initial report within 15 calendar days.', claims:[
+    {t:'Fatal / life-threatening → expedited',ok:true,sec:'3.4'},{t:'15 calendar days',ok:true,sec:'3.4'},{t:'MQ sign-off required',ok:true,sec:'3.4'}
+  ], json:{expedited_triggers:['fatal','life_threatening','hospitalization_gt_24h','congenital_anomaly'],timeline_days:15,mq_review_required:true,grounded:true,hallucination_flag:false}, hit:100, groundPct:100, caught:0, block:false, reason:'',
+    narr:'Clean pass — 100% grounded. Queued for human approval under ASK policy.' }
 };
-const GOLD = [{id:'g1',name:'Retrieval returns correct doc'},{id:'g2',name:'Catches numeric hallucination'},{id:'g3',name:'100% grounded on SOP query'},{id:'g4',name:'JSON schema valid'},{id:'g5',name:'NEVER blocks EHR write'}];
 
-let tourRunning = false, introStep = 1, goldResults = {};
-GOLD.forEach(g => goldResults[g.id] = null);
+const GOLD = [
+  {id:'g1',name:'Retrieval returns Protocol §5.2.1 for dose query'},
+  {id:'g2',name:'Grounding catches 18.7% hallucination (Q2)'},
+  {id:'g3',name:'SOP query reaches 100% groundedness'},
+  {id:'g4',name:'Pydantic JSON schema validates'},
+  {id:'g5',name:'NEVER policy blocks EHR auto-publish'}
+];
 
-function donut(el, pct, color, size=52) {
-  const r = (size === 52 ? 22 : 38), c = 2 * Math.PI * r, off = c * (1 - pct / 100);
-  el.innerHTML = `<circle cx="50" cy="50" r="${r}" fill="none" stroke="#e2e8f0" stroke-width="${size===52?8:10}"/><circle cx="50" cy="50" r="${r}" fill="none" stroke="${color}" stroke-width="${size===52?8:10}" stroke-dasharray="${c}" stroke-dashoffset="${off}" stroke-linecap="round" transform="rotate(-90 50 50)" style="transition:stroke-dashoffset .8s ease"/>`;
+let tourRunning=false, introStep=1, goldResults={}, activeDoc='p1', citeFormat='vancouver';
+
+GOLD.forEach(g => goldResults[g.id]='pending');
+
+function formatCitation(doc, secId) {
+  const sec = doc.sections.find(s => s.id === secId);
+  const fmt = CITE_FMT.value;
+  citeFormat = fmt;
+  const sn = sec ? sec.id : '—';
+  const maps = {
+    vancouver: `${doc.sponsor}. ${doc.title} ${doc.version}. ${doc.date};${sn}.`,
+    ama: `${doc.sponsor}. ${doc.title}, ${doc.version}. ${doc.date}. Section ${sn}.`,
+    apa: `${doc.sponsor}. (${doc.date.split('-')[2]||'2025'}). ${doc.title} (${doc.version}). Section ${sn}.`,
+    icmje: `[Structured] Source: ${doc.title} | Section ${sn} | Sponsor: ${doc.sponsor} | Version: ${doc.version} | Date: ${doc.date}`
+  };
+  return maps[fmt] || maps.vancouver;
 }
 
-function updateCharts(ans) {
-  const sup = ans.claims.filter(c => c.status === 'supported').length;
-  const uns = ans.claims.filter(c => c.status === 'unsupported').length;
-  const total = sup + uns || 1;
-  donut($('chart-hit'), ans.hit, '#1e4fd8');
-  donut($('chart-ground'), ans.groundPct, ans.groundPct >= 80 ? '#047857' : ans.groundPct >= 50 ? '#b45309' : '#c0392b');
-  donut($('chart-caught'), Math.min(ans.caught * 50, 100), ans.caught ? '#c0392b' : '#047857');
-  donut($('donut-ground'), ans.groundPct, ans.groundPct >= 80 ? '#047857' : '#b45309', 90);
-  donut($('donut-retrieval'), ans.retrievalScore, '#1e4fd8', 90);
-  $('cp-ground').textContent = ans.groundPct + '%';
-  $('cp-ground').className = 'cp ' + (ans.groundPct >= 80 ? 'ok' : ans.groundPct >= 50 ? '' : 'bad');
-  $('cp-retrieval').textContent = (ans.retrievalScore / 100).toFixed(2);
-  const bars = $('claim-bars');
-  bars.innerHTML = `<div class="seg" style="width:${sup/total*100}%;background:var(--ok)">${sup} ok</div><div class="seg" style="width:${uns/total*100}%;background:var(--bad)">${uns} fail</div>`;
-  $('lbl-supported').textContent = sup + ' supported';
-  $('lbl-unsupported').textContent = uns + ' unsupported';
+function renderProtocol(docId, highlightSec) {
+  const doc = DOCS.find(d => d.id === docId);
+  if (!doc) return;
+  activeDoc = docId;
+  $('protocol-view').innerHTML = `
+    <div class="ph">Clinical trial document · fictional</div>
+    <div class="ptitle">${doc.title}</div>
+    <div class="pmeta">${doc.version} · ${doc.date}<br>Sponsor: ${doc.sponsor}</div>
+    ${doc.sections.map(s => `<div class="sec"><div class="sec-h">${s.head}</div><div>${s.id === highlightSec ? s.body : s.body.replace(/<\/?mark>/g,'')}</div></div>`).join('')}`;
+  document.querySelectorAll('.doc-tab').forEach(t => t.classList.toggle('on', t.dataset.id === docId));
+}
+
+function renderTabs() {
+  $('doc-tabs').innerHTML = DOCS.map(d => `<button class="doc-tab" data-id="${d.id}" type="button">${d.title.split(' ')[0]}…</button>`).join('');
+  document.querySelectorAll('.doc-tab').forEach(t => t.onclick = () => { renderProtocol(t.dataset.id); updateCite(); });
+}
+
+function renderQuestions() {
+  $('q-list').innerHTML = QUESTIONS.map(q => `<button class="q-btn" data-q="${q.id}" type="button"><div class="ql">${q.label}${q.trap?'<span class="trap">EVAL TRAP</span>':''}</div>${q.text}</button>`).join('');
+  document.querySelectorAll('.q-btn').forEach(b => b.onclick = () => { if(!tourRunning) runQuery(b.dataset.q); });
+}
+
+function renderGoldList() {
+  $('gold-list').innerHTML = GOLD.map(g => {
+    const st = goldResults[g.id];
+    return `<div class="gold-row" data-g="${g.id}"><span class="gn">${g.name}</span><span class="gs ${st}">${st==='pass'?'PASS':st==='fail'?'FAIL':st==='running'?'RUNNING…':'PENDING'}</span></div>`;
+  }).join('');
+}
+
+function updateCite(sec) {
+  const doc = DOCS.find(d => d.id === activeDoc);
+  if (!doc || !sec) { $('cite-out').classList.remove('show'); return; }
+  $('cite-out').textContent = formatCitation(doc, sec);
+  $('cite-out').classList.add('show');
+}
+
+function setMetricBar(id, pct) { $(id).style.width = pct + '%'; }
+
+function animateMetrics(ans, gradual=false) {
+  const anim = (el, val, suffix='') => {
+    if (!gradual) { el.textContent = val + suffix; return; }
+    let cur = 0; const target = parseInt(val)||0;
+    const iv = setInterval(() => { cur += Math.ceil((target-cur)/4)||1; if(cur>=target){cur=target;clearInterval(iv);} el.textContent=cur+suffix; }, 60);
+  };
+  anim($('stat-hit'), ans.hit, '%');
+  anim($('stat-ground'), ans.groundPct, '%');
+  $('stat-ground').className = 'mv ' + (ans.groundPct>=80?'ok':ans.groundPct>=50?'warn':'bad');
+  $('stat-caught').textContent = ans.caught;
+  setMetricBar('bar-hit', ans.hit);
+  setMetricBar('bar-ground', ans.groundPct);
+  setMetricBar('bar-caught', ans.caught ? 100 : 0);
+
+  const sup = ans.claims.filter(c=>c.ok).length, uns = ans.claims.filter(c=>!c.ok).length, tot = sup+uns||1;
+  $('g-seg-ok').style.width = (sup/tot*100)+'%';
+  $('g-seg-fail').style.width = (uns/tot*100)+'%';
+  $('g-lbl-ok').textContent = sup + ' supported (' + Math.round(sup/tot*100) + '%)';
+  $('g-lbl-fail').textContent = uns + ' unsupported (' + Math.round(uns/tot*100) + '%)';
+
+  document.querySelectorAll('.spark-col').forEach((col,i) => {
+    const c = ans.claims[i];
+    col.style.height = c ? (c.ok ? '100%' : '35%') : '8%';
+    col.classList.toggle('lit', !!c);
+    col.style.background = c && !c.ok ? 'linear-gradient(180deg,#c41e3a,#8b1528)' : '';
+  });
+}
+
+function highlightSvg(stage, block=false) {
+  ['svg-ground','svg-gate','svg-human'].forEach(id => {
+    const el = $(id); if(!el) return;
+    el.setAttribute('fill', id==='svg-'+stage ? '#e6f5ec' : '#fff');
+    el.setAttribute('stroke', id==='svg-'+stage ? '#00A651' : '#c5d0de');
+    el.setAttribute('stroke-width', id==='svg-'+stage ? '3' : '2');
+  });
+  $('svg-block').setAttribute('opacity', block ? '1' : '0');
+  $('svg-block-label').setAttribute('opacity', block ? '1' : '0');
+  $('svg-block-text').setAttribute('opacity', block ? '1' : '0');
+}
+
+function setPs(name, on, fail=false) {
+  document.querySelectorAll('.ps-item').forEach(p => {
+    p.classList.remove('on','fail');
+    if (p.dataset.p === name) { p.classList.add(on ? (fail?'fail':'on') : ''); }
+  });
+  const el = $('ps-'+name);
+  if (el && on) el.textContent = fail ? 'BLOCKED' : 'active';
+}
+
+function resetPs() {
+  document.querySelectorAll('.ps-item').forEach(p => p.classList.remove('on','fail'));
+  ['retrieve','generate','ground','policy','human'].forEach(n => { const e=$('ps-'+n); if(e) e.textContent=''; });
+  highlightSvg('', false);
 }
 
 function syntaxHighlight(obj) {
-  const s = JSON.stringify(obj, null, 2);
-  return s.replace(/("[\w_]+")(\s*:)/g,'<span class="jk">$1</span>$2')
+  return JSON.stringify(obj,null,2)
+    .replace(/("[\w_]+")(\s*:)/g,'<span class="jk">$1</span>$2')
     .replace(/:\s*(".*?")/g,': <span class="js">$1</span>')
     .replace(/:\s*(\d+\.?\d*)/g,': <span class="jn">$1</span>')
     .replace(/:\s*(true|false)/g,': <span class="jb">$1</span>')
@@ -546,160 +563,133 @@ function syntaxHighlight(obj) {
 
 function log(msg, cls='') {
   const t = new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  $('audit').innerHTML += `\n<span class="ev">[${t}]</span> <span class="${cls}">${msg}</span>`;
+  $('audit').innerHTML += `\n[${t}] <span class="${cls}">${msg}</span>`;
   $('audit').scrollTop = $('audit').scrollHeight;
 }
 
-function narr(act, text) { $('narr-act').textContent = act; $('narr-text').innerHTML = text; $('narr').classList.add('show'); }
-function spotlight(...ids) { document.body.classList.add('dim'); document.querySelectorAll('.spot').forEach(el => el.classList.remove('on')); ids.forEach(id => { const el = $(id); if(el) el.classList.add('on'); }); }
-function clearSpotlight() { document.body.classList.remove('dim'); document.querySelectorAll('.spot').forEach(el => el.classList.remove('on')); }
+function narr(act, html) { $('narr-act').textContent = act; $('narr-text').innerHTML = html; $('narr').classList.add('show'); }
+function spotlight(...ids) { document.body.classList.add('dim'); document.querySelectorAll('.spot').forEach(e=>e.classList.remove('on')); ids.forEach(id=>{const e=$(id);if(e)e.classList.add('on');}); }
+function clearSpot() { document.body.classList.remove('dim'); document.querySelectorAll('.spot').forEach(e=>e.classList.remove('on')); }
 
-function setFlowNode(name, state, status='') {
-  const node = document.querySelector(`.fnode[data-f="${name}"]`);
-  if (!node) return;
-  node.classList.remove('active','done','blocked');
-  if (state) node.classList.add(state);
-  const fs = $('fs-' + name);
-  if (fs) fs.textContent = status;
-}
-
-function resetFlow() {
-  ['query','retrieve','generate','ground','policy','human'].forEach(n => setFlowNode(n,'',''));
-  document.querySelectorAll('.farrow').forEach(a => a.classList.remove('lit'));
-  document.querySelectorAll('.step').forEach(s => s.classList.remove('show','glow'));
-  document.querySelectorAll('.perm-row').forEach(p => p.classList.remove('lit'));
-}
-
-function showStep(name) { const s = document.querySelector(`.step[data-s="${name}"]`); if(s) s.classList.add('show','glow'); }
-
-function renderDocs() { $('doc-list').innerHTML = DOCS.map(d => `<li data-id="${d.id}"><div class="dt">${d.title}</div><div class="dm">${d.meta}</div></li>`).join(''); }
-function renderQuestions() {
-  $('q-grid').innerHTML = QUESTIONS.map(q => `<button class="q-chip" data-q="${q.id}"><b>${q.label}</b>${q.text}${q.trap?'<span class="trap">EVAL TRAP</span>':''}</button>`).join('');
-  document.querySelectorAll('.q-chip').forEach(b => b.onclick = () => { if(!tourRunning) runQuery(b.dataset.q); });
-}
-function renderGoldTable() {
-  $('gold-body').innerHTML = GOLD.map(g => { const st = goldResults[g.id]; return `<tr data-g="${g.id}"><td>${g.name}</td><td class="${st==='pass'?'pass':st==='fail'?'fail':'pending'}">${st==='pass'?'PASS':st==='fail'?'FAIL':'—'}</td></tr>`; }).join('');
-}
-
-function highlight(text, terms) {
-  let t = text;
-  terms.forEach(term => { if(term && term.length>2) t = t.replace(new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'), m => `<mark>${m}</mark>`); });
-  return t;
-}
-
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
 
 async function runQuery(qid, fromTour=false) {
   if (tourRunning && !fromTour) return;
-  const q = QUESTIONS.find(x => x.id === qid);
-  const ans = ANSWERS[qid];
-  document.querySelectorAll('.q-chip').forEach(c => c.classList.toggle('sel', c.dataset.q === qid));
-  document.querySelectorAll('.doc-list li').forEach(li => li.classList.toggle('on', li.dataset.id === q.docId));
-  $('actions').style.display = 'none';
-  $('gate-box').classList.remove('show','blocked');
-  $('json-panel').classList.remove('show');
-  $('claims').innerHTML = '';
-  $('retrieval').innerHTML = '';
-  $('answer-text').textContent = 'Running pipeline…';
-  $('answer-text').style.color = 'var(--mute)';
-  resetFlow();
-  if (fromTour) narr('Scene', ans.narr);
-  log(`Query: "${q.text.substring(0,55)}…"`, '');
+  const q = QUESTIONS.find(x=>x.id===qid), ans = ANSWERS[qid], doc = DOCS.find(d=>d.id===q.docId);
+  document.querySelectorAll('.q-btn').forEach(b=>b.classList.toggle('on',b.dataset.q===qid));
+  renderProtocol(q.docId, q.sec);
+  updateCite(q.sec);
+  $('actions').style.display='none';
+  $('gate-panel').classList.remove('show');
+  $('json-wrap').classList.remove('show');
+  $('ret-block').classList.remove('show');
+  $('claims').innerHTML='';
+  $('answer-text').textContent='Running pipeline…';
+  $('answer-text').style.color='var(--mute)';
+  resetPs();
+  if(fromTour) narr('Scene', ans.narr);
+  log('Query: '+q.text);
 
-  spotlight('spot-flow','spot-left');
-  setFlowNode('query','active','received');
-  await sleep(550);
+  spotlight('spot-gov','spot-left');
+  setPs('retrieve', true); highlightSvg('ground', false);
+  await sleep(700);
 
-  spotlight('spot-flow','spot-main');
-  setFlowNode('query','done','✓');
-  setFlowNode('retrieve','active','searching…');
-  showStep('retrieve');
-  $('step-retrieve').textContent = 'Embedding query · searching vector index…';
-  await sleep(750);
+  const sec = doc.sections.find(s=>s.id===q.sec);
+  $('ret-block').innerHTML = `<div class="rh"><span>Retrieval hit@1 · ${doc.title} §${q.sec}</span><span class="ret-score">cosine 0.92</span></div><div>${sec ? sec.body : ''}</div>`;
+  $('ret-block').classList.add('show');
+  $('ps-retrieve').textContent = 'hit@1 · 0.92';
+  await sleep(600);
 
-  const doc = DOCS.find(d => d.id === q.docId);
-  const terms = ans.claims.filter(c => c.status==='supported').map(c => c.t.split(' ')[0]);
-  $('retrieval').innerHTML = `
-    <div class="ret-item" id="r1"><div class="score">hit@1 · cosine 0.${ans.retrievalScore} <span class="score-bar"><span class="score-fill" id="sf1" style="width:0"></span></span></div>${highlight(doc.text, terms)}</div>
-    <div class="ret-item" id="r2" style="opacity:.4"><div class="score">rank 2 · cosine 0.41 <span class="score-bar"><span class="score-fill" style="width:41%"></span></span></div>${DOCS[1].text.substring(0,90)}…</div>`;
-  setTimeout(() => { $('r1').classList.add('show'); $('sf1').style.width = ans.retrievalScore + '%'; setTimeout(() => $('r2').classList.add('show'), 250); }, 50);
-
-  setFlowNode('retrieve','done','0.' + ans.retrievalScore);
-  setFlowNode('generate','active','drafting…');
-  showStep('generate');
-  $('step-generate').textContent = 'LLM generating answer from retrieved context…';
+  setPs('retrieve', false); setPs('generate', true);
+  $('ps-generate').textContent = 'drafting…';
   await sleep(650);
-
   $('answer-text').textContent = ans.text;
-  $('answer-text').style.color = 'var(--ink)';
-  setFlowNode('generate','done','✓');
-  setFlowNode('ground','active','validating…');
-  showStep('ground');
+  $('answer-text').style.color='var(--ink)';
+  $('ps-generate').textContent = 'done';
+
+  setPs('generate', false); setPs('ground', true);
+  highlightSvg('ground', false);
+  spotlight('spot-main');
+
+  let groundPctRunning = 100;
+  for (let i = 0; i < ans.claims.length; i++) {
+    await sleep(500);
+    const c = ans.claims[i];
+    const docRef = DOCS.find(d=>d.id===q.docId);
+    const cite = c.ok ? formatCitation(docRef, c.sec) : '— not in source document';
+    const div = document.createElement('div');
+    div.className = 'claim ' + (c.ok?'ok':'bad');
+    div.innerHTML = `<span class="claim-st">${c.ok?'SUPPORTED':'UNSUPPORTED'}</span><div class="claim-body">${c.t}<div class="claim-cite">${cite}</div></div>`;
+    $('claims').appendChild(div);
+    setTimeout(()=>div.classList.add('vis'),20);
+    if (!c.ok) {
+      setPs('ground', true, true);
+      $('ps-ground').textContent = 'FAIL';
+      log('BLOCKED claim: '+c.t, 'bad');
+      groundPctRunning = ans.groundPct;
+    }
+    animateMetrics({...ans, groundPct: c.ok ? Math.round((i+1)/ans.claims.length*100) : ans.groundPct, claims: ans.claims.slice(0,i+1)}, true);
+    document.querySelectorAll('.spark-col').forEach((col,idx)=>{
+      if(idx<=i){ col.style.height = ans.claims[idx].ok ? '100%' : '35%'; col.classList.add('lit'); if(!ans.claims[idx].ok) col.style.background='linear-gradient(180deg,#c41e3a,#8b1528)'; }
+    });
+  }
+  $('ps-ground').textContent = ans.groundPct + '%';
+  await sleep(400);
+
+  setPs('ground', false); setPs('policy', true);
+  highlightSvg('gate', ans.block);
+  document.querySelector('.perm-table tr[data-p="ask"]').classList.add('lit');
+  $('ps-policy').textContent = 'checking…';
   await sleep(500);
 
-  for (const c of ans.claims) {
-    await sleep(400);
-    const div = document.createElement('div');
-    div.className = `claim ${c.status}`;
-    div.innerHTML = `<span class="claim-tag">${c.status}</span><span>${c.t} <em style="color:var(--mute);font-size:13px">(${c.src})</em></span>`;
-    $('claims').appendChild(div);
-    setTimeout(() => div.classList.add('show'), 10);
-    if (c.status === 'unsupported') { setFlowNode('ground','blocked','FAIL'); log(`CLAIM BLOCKED: "${c.t}"`, 'bad'); }
-  }
-
-  if (!ans.claims.some(c => c.status === 'unsupported')) setFlowNode('ground','done', ans.groundPct + '%');
-  await sleep(450);
-
-  setFlowNode('policy','active','checking…');
-  showStep('policy');
-  document.querySelector('.perm-row[data-p="ask"]').classList.add('lit');
-  await sleep(550);
-
   $('json-out').innerHTML = syntaxHighlight(ans.json);
-  $('json-panel').classList.add('show');
-  $('stat-hit').textContent = ans.hit + '%';
-  $('stat-ground').textContent = ans.groundPct + '%';
-  $('stat-ground').className = 'kv ' + (ans.groundPct >= 80 ? 'ok' : ans.groundPct >= 50 ? 'warn' : 'bad');
-  $('stat-caught').textContent = ans.caught;
-  updateCharts(ans);
-  spotlight('spot-right','spot-main');
+  $('json-conf').textContent = 'confidence: ' + (ans.json.confidence*100).toFixed(0) + '%';
+  $('json-wrap').classList.add('show');
+  animateMetrics(ans, true);
+  spotlight('spot-right','spot-gov');
 
   if (ans.block) {
-    setFlowNode('policy','blocked','BLOCKED');
-    $('gate-box').classList.add('show', ans.caught ? 'blocked' : 'show');
-    $('gate-title').textContent = ans.caught ? 'Evaluation gate: BLOCKED — hallucination caught' : 'Evaluation gate: BLOCKED — review required';
+    setPs('policy', true, true);
+    $('gate-panel').classList.add('show');
+    $('gate-title').textContent = ans.caught ? 'Evaluation gate: BLOCKED — hallucination detected' : 'Evaluation gate: BLOCKED — review required';
     $('gate-reason').textContent = ans.reason;
-    $('step-policy').textContent = ans.reason;
-    log('GATE BLOCKED · ' + ans.reason.substring(0,70) + '…', 'bad');
+    $('ps-policy').textContent = 'BLOCKED';
+    highlightSvg('gate', true);
+    log('GATE BLOCKED: '+ans.reason.substring(0,80), 'bad');
   } else {
-    setFlowNode('policy','done','PASS');
-    $('step-policy').textContent = 'All claims grounded · passed threshold';
-    log('All claims grounded · ready for human approval', 'ok');
+    setPs('policy', true, false);
+    $('ps-policy').textContent = 'PASS';
+    log('All claims grounded — queued for human review', 'ok');
   }
 
-  setFlowNode('human','active','awaiting…');
-  showStep('human');
-  $('actions').style.display = 'flex';
-  document.querySelectorAll('.farrow').forEach(a => a.classList.add('lit'));
+  setPs('policy', false); setPs('human', true);
+  $('ps-human').textContent = 'awaiting';
+  $('actions').style.display='flex';
   await sleep(300);
-  if (!fromTour) clearSpotlight();
+  if(!fromTour) clearSpot();
 }
 
 async function runGoldenSuite() {
   spotlight('spot-right');
-  narr('Eval harness', 'Running <b>golden test suite</b> — 5 regression tests. Watch pass rate climb to 100%.');
-  log('Running golden test suite…', '');
+  narr('Validation', 'Golden regression suite — each test runs <b>pending → running → pass</b>. Progress bar fills gradually.');
+  log('Golden suite started', 'warn');
   $('btn-run-gold').disabled = true;
+  GOLD.forEach(g => goldResults[g.id] = 'pending');
+  renderGoldList();
   let passed = 0;
   for (const g of GOLD) {
-    await sleep(450);
+    goldResults[g.id] = 'running';
+    renderGoldList();
+    await sleep(700);
     goldResults[g.id] = 'pass';
     passed++;
-    renderGoldTable();
+    renderGoldList();
+    const pct = Math.round(passed / GOLD.length * 100);
+    $('gm-fill').style.width = pct + '%';
+    $('gm-pct').textContent = pct + '%';
     $('stat-gold').textContent = passed + '/5';
-    donut($('chart-gold'), passed / 5 * 100, '#047857');
-    const row = document.querySelector(`tr[data-g="${g.id}"]`);
-    if (row) { row.classList.add('flash'); setTimeout(() => row.classList.remove('flash'), 600); }
+    setMetricBar('bar-gold', pct);
+    await sleep(400);
   }
   log('Golden suite: 5/5 PASS', 'ok');
   $('btn-run-gold').disabled = false;
@@ -707,57 +697,43 @@ async function runGoldenSuite() {
 
 async function playScenario() {
   tourRunning = true;
-  document.body.classList.add('running');
   $('btn-play').disabled = true;
-  log('Guided scenario started', 'warn');
-  narr('Welcome', 'Starting <b>90-second walkthrough</b>. Pipeline, charts, and panels will light up in sequence.');
-  await runQuery('q1', true); await sleep(3000);
-  await runQuery('q2', true); await sleep(3400);
-  await runQuery('q3', true); await sleep(2400);
-  await runGoldenSuite(); await sleep(1600);
-  narr('Complete', 'Tour done. Try <b>question #2</b> manually — watch groundedness drop to <b>50%</b> and the gate block.');
-  log('Guided scenario complete', 'ok');
+  narr('Welcome', '90-second walkthrough. <b>Q2</b> = eval trap: 18.7% hospitalization is fabricated.');
+  await runQuery('q1', true); await sleep(3200);
+  await runQuery('q2', true); await sleep(3600);
+  await runQuery('q3', true); await sleep(2600);
+  await runGoldenSuite(); await sleep(1400);
+  narr('Complete', 'Try <b>Q2</b> again — watch block path on architecture diagram and metrics drop to <b>50%</b>.');
   tourRunning = false;
-  document.body.classList.remove('running');
   $('btn-play').disabled = false;
-  clearSpotlight();
+  clearSpot();
 }
 
-// Intro carousel
-const introLabels = ['','Next: core principle →','Next: what you\'ll see →','Next: how to explore →','Enter the console →'];
+// Intro
 function showIntro(n) {
   introStep = n;
-  [1,2,3,4].forEach(i => { $('introS'+i).style.display = i===n ? 'block' : 'none'; });
-  document.querySelectorAll('.intro-progress span').forEach((s,i) => s.classList.toggle('on', i < n));
-  $('introBack').style.visibility = n > 1 ? 'visible' : 'hidden';
-  $('introNext').textContent = introLabels[n] || 'Next →';
-  if (n === 1) { let i = 0; document.querySelectorAll('#introViz .iv-row').forEach((r,idx) => { setTimeout(() => r.classList.add('lit'), idx * 400); }); }
+  document.querySelectorAll('.intro-slide').forEach(s => s.style.display = s.dataset.i==n ? 'block' : 'none');
+  document.querySelectorAll('.intro-dots i').forEach((d,i) => d.classList.toggle('on', i < n));
+  $('introBack').style.display = n > 1 ? 'inline-block' : 'none';
+  $('introNext').textContent = n < 3 ? 'Continue' : 'Enter console';
+  if (n === 1) {
+    document.querySelectorAll('#introFlow .if-step').forEach((s,i) => setTimeout(() => s.classList.add('on'), i*350));
+  }
 }
-function closeIntro() { $('introOv').classList.add('hide'); }
-function closeHowto() { $('howtoOv').classList.add('hide'); }
-
-$('introBack').onclick = () => showIntro(introStep - 1);
-$('introNext').onclick = () => introStep < 4 ? showIntro(introStep + 1) : closeIntro();
-$('introSkip').onclick = closeIntro;
-$('introOv').onclick = e => { if(e.target === $('introOv')) closeIntro(); };
-$('btn-howto').onclick = () => $('howtoOv').classList.remove('hide');
-$('howtoClose').onclick = closeHowto;
-$('howtoSkip').onclick = closeHowto;
-document.addEventListener('keydown', e => { if(e.key==='Escape'){ closeIntro(); closeHowto(); } });
+$('introNext').onclick = () => introStep < 3 ? showIntro(introStep+1) : $('introOv').classList.add('hide');
+$('introBack').onclick = () => showIntro(introStep-1);
+$('introSkip').onclick = () => $('introOv').classList.add('hide');
+CITE_FMT.onchange = () => { const q = QUESTIONS.find(x=>document.querySelector('.q-btn.on')?.dataset.q===x.id); if(q) updateCite(q.sec); };
 
 $('btn-play').onclick = playScenario;
 $('btn-run-gold').onclick = runGoldenSuite;
-$('btn-copy-audit').onclick = () => { navigator.clipboard.writeText($('audit').innerText); log('Audit log copied', 'ok'); };
-$('btn-approve').onclick = () => { log('Human approved · audit trail updated', 'ok'); $('gate-box').classList.remove('show'); setFlowNode('human','done','approved'); };
-$('btn-reject').onclick = () => { log('Rejected · queued for regeneration', 'bad'); $('answer-text').textContent = 'Rejected — awaiting regeneration.'; $('claims').innerHTML = ''; setFlowNode('human','blocked','rejected'); };
-$('btn-edit').onclick = () => { $('modal-edit').value = $('answer-text').textContent; $('modal').classList.add('open'); };
-$('modal-cancel').onclick = () => $('modal').classList.remove('open');
-$('modal-save').onclick = () => { $('answer-text').textContent = $('modal-edit').value; $('modal').classList.remove('open'); log('Human edited and approved', 'ok'); setFlowNode('human','done','edited'); };
+$('btn-copy-audit').onclick = () => { navigator.clipboard.writeText($('audit').innerText); log('Audit copied','ok'); };
+$('btn-approve').onclick = () => { log('Human approved','ok'); $('gate-panel').classList.remove('show'); $('ps-human').textContent='approved'; };
+$('btn-reject').onclick = () => { log('Rejected','bad'); $('answer-text').textContent='Rejected.'; $('claims').innerHTML=''; };
+$('btn-howto').onclick = () => alert('Play the scenario · Pick Q2 for eval trap · Switch citation format · Run golden tests');
+$('btn-edit').onclick = () => { const t=prompt('Edit draft:', $('answer-text').textContent); if(t){ $('answer-text').textContent=t; log('Edited & approved','ok'); }};
 
-renderDocs(); renderQuestions(); renderGoldTable();
-donut($('chart-hit'), 0, '#1e4fd8'); donut($('chart-ground'), 0, '#1e4fd8');
-donut($('chart-caught'), 0, '#047857'); donut($('chart-gold'), 0, '#1e4fd8');
-donut($('donut-ground'), 0, '#1e4fd8', 90); donut($('donut-retrieval'), 0, '#1e4fd8', 90);
+renderTabs(); renderProtocol('p1'); renderQuestions(); renderGoldList();
 </script>
 </body>
 </html>
